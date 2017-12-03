@@ -6,7 +6,7 @@ class Database{
     protected $comands = [];
     protected $autocomit = true;
     public $busy = false;
-    public function __construct($settings, $username, $pass){
+    public function __construct($settings, $username = NULL, $pass = NULL){
         $this->conn = new \PDO($settings, $username, $pass);
     }
     /**
