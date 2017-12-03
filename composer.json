@@ -2,11 +2,19 @@
     "name": "matajm/php-orm",
     "description": "Simple ORM basado en PDO",
     "type": "library",
+    "version": "0.0.0",
     "authors": [
         {
             "name": "Jhonny Mata",
             "email": "solucionesmatajm@gmail.com"
         }
     ],
-    "require": {}
+    "autoload": {
+        "psr-4": {
+            "phpORM\\": "src/"
+        }
+    },
+    "require": {
+        "php": ">=5.6.0"
+    }
 }
