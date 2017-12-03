@@ -1,0 +1,12 @@
+{
+    "name": "matajm/php-orm",
+    "description": "Simple ORM basado en PDO",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Jhonny Mata",
+            "email": "solucionesmatajm@gmail.com"
+        }
+    ],
+    "require": {}
+}
