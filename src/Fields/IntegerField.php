@@ -14,4 +14,7 @@ class IntegerField extends BaseField{
         }
         return $SQL;
     }
+    public function parse_value($str){
+        return (int)$str;
+    }
 }
