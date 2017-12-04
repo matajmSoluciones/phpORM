@@ -21,8 +21,13 @@ abstract class Database{
                self::$username,
                self::$password,
                self::$options);
+            $database->setAttribute(
+                \PDO::ATTR_ERRMODE,
+                \PDO::ERRMODE_EXCEPTION);
             self::$database = new Schema($database);
         }
         return self::$database;
+    }
+    public static function createTables(){
     }
 }
