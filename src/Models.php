@@ -13,6 +13,7 @@ abstract class Models{
     protected static $table_name;
     private static $columns = [];
     private static $meta_columns = [];
+    private static $column_index;
     /**
      * Genera el esquema de la base de datos
      * @param $schema \phpORM\Schema
@@ -25,7 +26,8 @@ abstract class Models{
             "comands",
             "table_name",
             "columns",
-            "meta_columns"
+            "meta_columns",
+            "column_index"
         ];
         $columns = array_diff(array_keys($attr), $ignore);
         self::$columns = [];
@@ -51,20 +53,26 @@ abstract class Models{
             }
             $fieldClass = new $column["type"]($MSB, $db_column, $db_size, $db_null);
             if (isset($column["primary_key"])) {
-                $constraint = new Fields\PrimaryKey(uniqid(), $db_column, $key);
+                $constraint = new Fields\PrimaryKey(uniqid(), $db_column);
                 $fieldClass->addConstraints($constraint);
                 self::$pk_primary[] = $constraint;
+                if (!self::$column_index) {
+                    self::$column_index = [$key, $fieldClass];
+                }
             }
             self::$columns[] = $fieldClass;
             self::$meta_columns[$key] = $fieldClass;
         }
         if(count(self::$pk_primary) == 0){
             $fieldClass = new Fields\AutoIncrementField($MSB, "id", 8, false);
-            $constraint = new Fields\PrimaryKey(uniqid(), "id", "id");
+            $constraint = new Fields\PrimaryKey(uniqid(), "id");
             $fieldClass->addConstraints($constraint);
             self::$columns[] = $fieldClass;
             self::$pk_primary[] = $constraint;
             self::$meta_columns["id"] = $fieldClass;
+            if (!self::$column_index) {
+                self::$column_index = ["id", $fieldClass];
+            }
         }
     }
     /**
@@ -122,7 +130,7 @@ abstract class Models{
      */
     public static function create($args){
         $metas = self::getMetas();
-        $obj = new Serializers($args, $metas, static::$table_name);
+        $obj = new Serializers($args, $metas, static::$table_name, self::$column_index);
         return $obj;
     }
     protected static function getMetas(){
@@ -171,7 +179,7 @@ abstract class Models{
         $rows = $query->fetchAll(\PDO::FETCH_ASSOC);
         $metas = self::getMetas();
         for ($i = 0, $n = count($rows); $i < $n; $i++) {
-            $rows[$i] = new Serializers($rows[$i], $metas, static::$table_name);
+            $rows[$i] = new Serializers($rows[$i], $metas, static::$table_name, self::$column_index, true);
         }
         return  $rows;
     }
@@ -182,14 +190,11 @@ abstract class Models{
         }
         $row = $query->fetch(\PDO::FETCH_ASSOC);
         $metas = self::getMetas();
-        return  new Serializers($row, $metas, static::$table_name);
+        return  new Serializers($row, $metas, static::$table_name, self::$column_index, true);
     }
     public static function findId($id){
         $filters = [];
-        if (count(self::$pk_primary) == 0) {
-            throw new Exception("No existe un campo primario!");
-        }
-        $filters[self::$pk_primary[0]->getMeta()] = $id;
+        $filters[self::$column_index[0]] = $id;
         $row = self::findOne($filters);
         return $row;
     }

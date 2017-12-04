@@ -95,6 +95,21 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
         $this->assertNotNull($obj->name);
     }
     /**
+     * Editar objeto
+     */
+    public function testgetIdEdit(){
+        $obj = ModelExample::findId(5);
+        $this->assertNotNull($obj);
+        $this->assertNotNull($obj->id);
+        $this->assertNotNull($obj->name);
+        $obj->name = "prueba";
+        $obj->save();
+        $stm = self::$schema->prepare(
+            "SELECT * FROM prueba WHERE id = ?", [5]);
+        $compare = $stm->fetch(\PDO::FETCH_OBJ);
+        $this->assertEquals($compare->pg_name, $obj->name);
+    }
+    /**
      * Obtener ultima instancia de la db y eliminar una tabla.
      */
     public function testDropModel(){
