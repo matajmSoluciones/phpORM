@@ -10,7 +10,7 @@ class IntegerField extends BaseField{
             $SQL.= " NOT NULL";
         }
         if(!$this->optional){
-            $SQL.= $this->optional;
+            $SQL.= " ".$this->optional;
         }
         return $SQL;
     }

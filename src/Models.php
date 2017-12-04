@@ -59,7 +59,7 @@ abstract class Models{
             self::$meta_columns[$key] = $fieldClass;
         }
         if(count(self::$pk_primary) == 0){
-            $fieldClass = new Fields\IntegerField($MSB, "id", 8, false);
+            $fieldClass = new Fields\AutoIncrementField($MSB, "id", 8, false);
             $constraint = new Fields\PrimaryKey(uniqid(), "id");
             $fieldClass->addConstraints($constraint);
             self::$columns[] = $fieldClass;
@@ -89,6 +89,7 @@ abstract class Models{
             {$COLUMNS},
             {$CONSTRAINT}
         );";
+        var_dump($SQL);
         try{
             $schema->execute($SQL);
         }catch(Exception\IntegrityError $e){

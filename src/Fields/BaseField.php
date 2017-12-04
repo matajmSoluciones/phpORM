@@ -30,7 +30,7 @@ class BaseField{
             $SQL.= " NOT NULL";
         }
         if(!$this->optional){
-            $SQL.= $this->optional;
+            $SQL.= " ".$this->optional;
         }
         return $SQL;
     }
