@@ -25,16 +25,6 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($compare->tablename, $table);
     }
     /**
-     * Obtener ultima instancia de la db y eliminar una tabla.
-     */
-    public function testDropModel(){
-        $table = ModelExample::getTableName();
-        ModelExample::dropTable(true);
-        $stm = self::$schema->query("SELECT * FROM pg_tables WHERE tablename = '{$table}';");
-        $compare = $stm->fetch(\PDO::FETCH_OBJ);
-        $this->assertFalse($compare);
-    }
-    /**
      * Obtener información del servidor
      */
     public function testGetInfoDB(){
@@ -65,10 +55,44 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
             "id" => "5",
             "name" => "hola"
         ]);
-        var_dump($obj);
         $this->assertNotNull($obj);
         $this->assertNotNull($obj->id);
         $this->assertNotNull($obj->name);
         $this->assertInternalType("int", $obj->id);
+        $obj->save();
+    }
+    /**
+     * Buscando todos los registros
+     */
+    public function testgetAllObj(){
+        $objs = ModelExample::find([
+            "id" => 5
+        ], "=", "AND");
+        $this->assertNotNull($objs);
+        $this->assertTrue(count($objs) > 0);
+        foreach ($objs as $values) {
+            $this->assertInstanceOf(\phpORM\Serializers::class, $values);
+        }
+    }
+    /**
+     * Buscando un registro
+     */
+    public function testgetOne(){
+        $obj = ModelExample::findOne([
+            "id" => 5
+        ], "=", "AND");
+        $this->assertNotNull($obj);
+        $this->assertNotNull($obj->id);
+        $this->assertNotNull($obj->name);
+    }
+    /**
+     * Obtener ultima instancia de la db y eliminar una tabla.
+     */
+    public function testDropModel(){
+        $table = ModelExample::getTableName();
+        ModelExample::dropTable(true);
+        $stm = self::$schema->query("SELECT * FROM pg_tables WHERE tablename = '{$table}';");
+        $compare = $stm->fetch(\PDO::FETCH_OBJ);
+        $this->assertFalse($compare);
     }
 }

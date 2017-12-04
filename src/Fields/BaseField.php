@@ -18,6 +18,9 @@ class BaseField{
         $sql_function = NULL;
         $this->middleware = new \phpORM\Middleware($this);
     }
+    public function get_column(){
+        return $this->db_column;
+    }
     public function addConstraints($constraint){
         $this->constraints[] = $constraint;
     }

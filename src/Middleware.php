@@ -15,13 +15,16 @@ class Middleware{
         if(method_exists($this->meta, "obj_value")){
             $str = $this->meta->obj_value($str);
         }
-        /*if(method_exists($this->meta, "sql_value")){
-            $str = static::sql_value;
-        }*/
         foreach($this->middlewares as $middleware){
             if (is_callable($middleware)) {
                 $middleware($str);                
             }
+        }
+        return $str;
+    }
+    public function parseVal($str){
+        if(method_exists($this->meta, "sql_value")){
+            $str = $this->meta->sql_value($str);
         }
         return $str;
     }

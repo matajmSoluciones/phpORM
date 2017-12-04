@@ -89,7 +89,6 @@ abstract class Models{
             {$COLUMNS},
             {$CONSTRAINT}
         );";
-        var_dump($SQL);
         try{
             $schema->execute($SQL);
         }catch(Exception\IntegrityError $e){
@@ -122,12 +121,67 @@ abstract class Models{
      * @return \phpORM\Serializers
      */
     public static function create($args){
-        $datas = [];
+        $metas = self::getMetas();
+        $obj = new Serializers($args, $metas, static::$table_name);
+        return $obj;
+    }
+    protected static function getMetas(){
         $metas = [];
         foreach(self::$meta_columns as $key => $column){
             $metas[$key] = $column;
         }
-        $obj = new Serializers($args, $metas);
-        return $obj;
+        return $metas;
+    }
+    protected static function select(){
+        $fields = [];
+        foreach(self::$meta_columns as $key => $column){
+            $fields[] = "{$column->get_column()} as {$key}";
+        }
+        $sql = implode(", ", $fields);
+        $table = static::$table_name;
+        $SQL = "SELECT {$sql} FROM {$table}";
+        return $SQL;
+    }
+    protected static function where($filters=[], $operador = "=", $conditional="AND"){
+        $SQL = "";
+        if (count($filters) > 0) {
+            $actions = [];
+            foreach($filters as $key => $value){
+                if(!isset(self::$meta_columns[$key])){
+                    continue;
+                }
+                $column = self::$meta_columns[$key]->get_column();
+                $actions[] = "{$column} {$operador} :{$key}";
+            }
+            $SQL = "WHERE ".implode($conditional, $actions);
+        }
+        return $SQL;
+    }
+    protected static function SQLQueryGet($filters=[], $operador = "=", $conditional="AND"){
+        $SQL = self::select();
+        if(count($filters) > 0){
+            $SQL.= " ".self::where($filters, $operador, $conditional);
+        }
+        $schema = Database::getContainer();
+        $query = $schema->prepare($SQL, $filters);
+        return $query;
+    }
+    public static function find($filters=[], $operador = "=", $conditional="AND"){
+        $query = self::SQLQueryGet($filters, $operador, $conditional);
+        $rows = $query->fetchAll(\PDO::FETCH_ASSOC);
+        $metas = self::getMetas();
+        for ($i = 0, $n = count($rows); $i < $n; $i++) {
+            $rows[$i] = new Serializers($rows[$i], $metas, static::$table_name);
+        }
+        return  $rows;
+    }
+    public static function findOne($filters=[], $operador = "=", $conditional="AND"){
+        $query = self::SQLQueryGet($filters, $operador, $conditional);
+        if($query->rowCount() == 0){
+            throw new Exceptions\DoesNotExistError("No existe un registro!");
+        }
+        $row = $query->fetch(\PDO::FETCH_ASSOC);
+        $metas = self::getMetas();
+        return  new Serializers($row, $metas, static::$table_name);
     }
 }
