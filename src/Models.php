@@ -1,7 +1,7 @@
 <?php
 namespace phpORM;
 
-class Models{
+abstract class Models{
     private static $pk_primary = [];
     private $schema;
     protected static $table_name;
