@@ -51,7 +51,7 @@ abstract class Models{
             }
             $fieldClass = new $column["type"]($MSB, $db_column, $db_size, $db_null);
             if (isset($column["primary_key"])) {
-                $constraint = new Fields\PrimaryKey(uniqid(), $db_column);
+                $constraint = new Fields\PrimaryKey(uniqid(), $db_column, $key);
                 $fieldClass->addConstraints($constraint);
                 self::$pk_primary[] = $constraint;
             }
@@ -60,7 +60,7 @@ abstract class Models{
         }
         if(count(self::$pk_primary) == 0){
             $fieldClass = new Fields\AutoIncrementField($MSB, "id", 8, false);
-            $constraint = new Fields\PrimaryKey(uniqid(), "id");
+            $constraint = new Fields\PrimaryKey(uniqid(), "id", "id");
             $fieldClass->addConstraints($constraint);
             self::$columns[] = $fieldClass;
             self::$pk_primary[] = $constraint;
@@ -183,5 +183,14 @@ abstract class Models{
         $row = $query->fetch(\PDO::FETCH_ASSOC);
         $metas = self::getMetas();
         return  new Serializers($row, $metas, static::$table_name);
+    }
+    public static function findId($id){
+        $filters = [];
+        if (count(self::$pk_primary) == 0) {
+            throw new Exception("No existe un campo primario!");
+        }
+        $filters[self::$pk_primary[0]->getMeta()] = $id;
+        $row = self::findOne($filters);
+        return $row;
     }
 }
