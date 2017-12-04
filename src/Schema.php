@@ -31,4 +31,13 @@ class Schema{
             throw new Exception\IntegrityError($error->getMessage());
         }
     }
+    public function getServerInfo(){
+        return $this->database->getAttribute(\PDO::ATTR_SERVER_INFO);
+    }
+    public function getAutocomit(){
+        return $this->database->getAttribute(\PDO::ATTR_AUTOCOMMIT);
+    }
+    public function getDriver(){
+        return $this->database->getAttribute(\PDO::ATTR_DRIVER_NAME);
+    }
 }
