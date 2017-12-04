@@ -10,7 +10,7 @@ class ConstraintField {
         $this->constraint_name = $constraint_name;
     }
     public function __toString(){
-        $SQL = "{$this->$key_type} {$db_column}";
+        $SQL = "{$this->key_type} ({$this->db_column})";
         return $SQL;
     }
 }
