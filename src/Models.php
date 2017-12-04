@@ -6,14 +6,10 @@ class Models{
     private $schema;
     protected static $table_name;
     private static $columns = [];
-    /*public function __constructor(){
-        print("hola!");
-        $this->schema = Database::getContainer();
-        self::getModelColumns($this->schema);
+    
+    public static function getTableName(){
+        return static::$table_name;
     }
-    public function getContainer(){
-        return $this->schema;
-    }*/
     private static function getModelColumns($schema, &$obj = NULL){
         $attr = get_class_vars(static::class);
         $ignore = [
