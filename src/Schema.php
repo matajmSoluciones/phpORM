@@ -24,19 +24,47 @@ class Schema{
      */
     public function prepare($SQL, $INPUT){
         try{
-            $stm = $this->database-prepare($SQL);
+            $stm = $this->database->prepare($SQL);
             $query = $stm->execute($INPUT);
             return $stm;
         }catch(\PDOException $error){
             throw new Exception\IntegrityError($error->getMessage());
         }
     }
+    /**
+     *  Genera una setencia SQL directa contra la base
+     * de datos
+     * @return \PDOStatement
+     */
+    public function query($SQL){
+        try{
+            $stm = $this->database->query($SQL);
+            return $stm;
+        }catch(\PDOException $error){
+            throw new Exception\IntegrityError($error->getMessage());
+        }
+    }
+    /**
+     * Obtener información del servidor de la Base de datos
+     * @return string
+     */
     public function getServerInfo(){
         return $this->database->getAttribute(\PDO::ATTR_SERVER_INFO);
     }
+    /**
+     * Obtener información del autocommit de la base de datos
+     * @return boolean
+     */
     public function getAutocomit(){
-        return $this->database->getAttribute(\PDO::ATTR_AUTOCOMMIT);
+        try{
+            return $this->database->getAttribute(\PDO::ATTR_AUTOCOMMIT);
+        }catch(\PDOException $e){
+            return false;
+        }
     }
+    /**
+     * Obtiene información del motor de la base de datos activa
+     */
     public function getDriver(){
         return $this->database->getAttribute(\PDO::ATTR_DRIVER_NAME);
     }
