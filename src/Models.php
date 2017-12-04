@@ -2,22 +2,30 @@
 namespace phpORM;
 
 abstract class Models{
+    /**
+     * @var $pk_primary Array[phpORM\Fields\ConstraintField]
+     * @var $schema \phpORM\Schema
+     * @var $table_name string
+     * @var $columns Array[phpORM\Fields\BaseField]
+     */
     private static $pk_primary = [];
     private $schema;
     protected static $table_name;
     private static $columns = [];
-    
-    public static function getTableName(){
-        return static::$table_name;
-    }
-    private static function getModelColumns($schema, &$obj = NULL){
+    private static $meta_columns = [];
+    /**
+     * Genera el esquema de la base de datos
+     * @param $schema \phpORM\Schema
+     */
+    private static function getModelColumns($schema){
         $attr = get_class_vars(static::class);
         $ignore = [
             "pk_primary",
             "schema",
             "comands",
             "table_name",
-            "columns"
+            "columns",
+            "meta_columns"
         ];
         $columns = array_diff(array_keys($attr), $ignore);
         self::$columns = [];
@@ -47,10 +55,8 @@ abstract class Models{
                 $fieldClass->addConstraints($constraint);
                 self::$pk_primary[] = $constraint;
             }
-            if($obj){
-                $obj->$key = $fieldClass;
-            }
             self::$columns[] = $fieldClass;
+            self::$meta_columns[$key] = $fieldClass;
         }
         if(count(self::$pk_primary) == 0){
             $fieldClass = new Fields\IntegerField($MSB, "id", 8, false);
@@ -58,9 +64,21 @@ abstract class Models{
             $fieldClass->addConstraints($constraint);
             self::$columns[] = $fieldClass;
             self::$pk_primary[] = $constraint;
+            self::$meta_columns["id"] = $fieldClass;
         }
-        //var_dump(self::$columns);
     }
+    /**
+     * Obtiene el nombre de la tabla en la base de datos
+     * @return string
+     */
+    public static function getTableName(){
+        return static::$table_name;
+    }
+    /**
+     * Genera el esquema e inserta la estructura de
+     * la base de datos.
+     * @param $safe boolean
+     */
     public static function createTable($safe=false){
         $schema = Database::getContainer();
         self::getModelColumns($schema);
@@ -80,6 +98,10 @@ abstract class Models{
             throw $e;
         }
     }
+    /**
+     * Elimina el modelo de la base de datos.
+     * @param $safe boolean
+     */
     public static function dropTable($safe=false){
         $table = static::$table_name;
         $schema = Database::getContainer();
@@ -91,5 +113,21 @@ abstract class Models{
             }
             throw $e;
         }
+    }
+    /**
+     * Crea una nueva instancia de la clase Serializers
+     * para el procesamiento de nuevos registros.
+     * @param $args Array[mixed]
+     * @return \phpORM\Serializers
+     */
+    public static function create($args){
+        var_dump(self::$meta_columns);
+        $datas = [];
+        $metas = [];
+        foreach(self::$meta_columns as $key => $column){
+            $metas[$key] = $column;
+        }
+        $obj = new Serializers($args, $metas);
+        return $obj;
     }
 }
