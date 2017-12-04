@@ -121,7 +121,6 @@ abstract class Models{
      * @return \phpORM\Serializers
      */
     public static function create($args){
-        var_dump(self::$meta_columns);
         $datas = [];
         $metas = [];
         foreach(self::$meta_columns as $key => $column){

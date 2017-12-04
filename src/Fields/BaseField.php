@@ -16,14 +16,7 @@ class BaseField{
         $this->null = $null;
         $parse_function = NULL;
         $sql_function = NULL;
-        if(method_exists($this, "obj_value")){
-            $parse_function = $this->obj_value;
-        }
-        if(method_exists($this, "sql_value")){
-            $sql_function = $this->sql_value;
-        }
-        $this->middleware = new \phpORM\Middleware([],
-            $parse_function, $sql_function);
+        $this->middleware = new \phpORM\Middleware($this);
     }
     public function addConstraints($constraint){
         $this->constraints[] = $constraint;

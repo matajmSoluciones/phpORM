@@ -53,7 +53,22 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetDriver(){
         $str = self::$schema->getDriver();
-        var_dump($str);
+        //var_dump($str);
         $this->assertInternalType("string", $str);
+    }
+    /**
+     * Creando un objeto serializers
+     * a partir del modelo
+     */
+    public function testCreateObj(){
+        $obj = ModelExample::create([
+            "id" => "5",
+            "name" => "hola"
+        ]);
+        var_dump($obj);
+        $this->assertNotNull($obj);
+        $this->assertNotNull($obj->id);
+        $this->assertNotNull($obj->name);
+        $this->assertInternalType("int", $obj->id);
     }
 }
