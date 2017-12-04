@@ -14,9 +14,8 @@ class BaseField{
         $this->column_size = $size;
         $this->null = $null;
     }
-    public function addConstraints(){
-        $args = func_num_args();
-        $this->constraints = array_merge($this->constraints, $args);
+    public function addConstraints($constraint){
+        $this->constraints[] = $constraint;
     }
     public function getConstraints(){
         return $this->constraints;
