@@ -129,8 +129,8 @@ class Serializers{
         if ($this->update) {
             $this->update();
         }
-        $stm = $this->select();
-        $this->obj = $stm->fetch(\PDO::FETCH_ASSOC);
+        /*$stm = $this->select();
+        $this->obj = $stm->fetch(\PDO::FETCH_ASSOC);*/
         $this->inserted = true;
         $this->update = false;
     }
