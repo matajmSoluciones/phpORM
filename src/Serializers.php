@@ -5,7 +5,6 @@ class Serializers{
     private $schema;
     private $update = false;
     private $inserted = false;
-    private $delete = false;
     private $metas = [];
     private $obj = [];
     private $table;
@@ -85,6 +84,18 @@ class Serializers{
         $SQL = "UPDATE {$this->table} SET {$columns_SQL}
             WHERE {$field} = :{$this->pk_column[0]}";
         $stm = $this->schema->prepare($SQL, $info["values"]);
+        return $stm;
+    }
+    public function remove(){
+        $field = $this->pk_column[1]->get_column();
+        $SQL = "DELETE FROM {$this->table} WHERE
+            {$field} = :{$this->pk_column[0]}";
+        $value = [];
+        $meta = $this->metas[$this->pk_column[0]];
+        $middleware = $meta->getMiddlewares();
+        $str = $middleware->parseVal($this->obj[$this->pk_column[0]]);
+        $value[$this->pk_column[0]] = $str;
+        $stm = $this->schema->prepare($SQL, $value);
         return $stm;
     }
     public function save(){
