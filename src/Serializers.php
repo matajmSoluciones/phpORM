@@ -68,6 +68,13 @@ class Serializers{
         $SQL = "INSERT INTO {$this->table}({$columns_SQL})
             VALUES ({$field_SQL})";
         $stm = $this->schema->prepare($SQL, $info["values"]);
+        $id_primary = $this->schema->getIdInsert();
+        if(!empty($id_primary)){
+            $meta = $this->metas[$this->pk_column[0]];
+            $middleware = $meta->getMiddlewares();
+            $str = $middleware($id_primary);
+            $this->obj[$this->pk_column[0]] = $str;
+        }
         return $stm;
     }
     private function update(){
@@ -84,6 +91,23 @@ class Serializers{
         $SQL = "UPDATE {$this->table} SET {$columns_SQL}
             WHERE {$field} = :{$this->pk_column[0]}";
         $stm = $this->schema->prepare($SQL, $info["values"]);
+        return $stm;
+    }
+    protected function select(){
+        $fields = [];
+        foreach($this->metas as $key => $column){
+            $fields[] = "{$column->get_column()} as {$key}";
+        }
+        $sql = implode(", ", $fields);
+        $table = $this->table;
+        $field = $this->pk_column[1]->get_column();
+        $SQL = "SELECT {$sql} FROM {$table} WHERE
+            {$field} = :{$this->pk_column[0]}";
+        $meta = $this->metas[$this->pk_column[0]];
+        $middleware = $meta->getMiddlewares();
+        $str = $middleware->parseVal($this->obj[$this->pk_column[0]]);
+        $value[$this->pk_column[0]] = $str;
+        $stm = $this->schema->prepare($SQL, $value);
         return $stm;
     }
     public function remove(){
@@ -105,6 +129,8 @@ class Serializers{
         if ($this->update) {
             $this->update();
         }
+        $stm = $this->select();
+        $this->obj = $stm->fetch(\PDO::FETCH_ASSOC);
         $this->inserted = true;
         $this->update = false;
     }

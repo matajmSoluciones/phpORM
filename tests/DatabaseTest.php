@@ -52,21 +52,20 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
      */
     public function testCreateObj(){
         $obj = ModelExample::create([
-            "id" => "5",
             "name" => "hola"
         ]);
         $this->assertNotNull($obj);
+        $obj->save();
         $this->assertNotNull($obj->id);
         $this->assertNotNull($obj->name);
         $this->assertInternalType("int", $obj->id);
-        $obj->save();
     }
     /**
      * Buscando todos los registros
      */
     public function testgetAllObj(){
         $objs = ModelExample::find([
-            "id" => 5
+            "id" => 1
         ], "=", "AND");
         $this->assertNotNull($objs);
         $this->assertTrue(count($objs) > 0);
@@ -79,7 +78,7 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
      */
     public function testgetOne(){
         $obj = ModelExample::findOne([
-            "id" => 5
+            "id" => 1
         ], "=", "AND");
         $this->assertNotNull($obj);
         $this->assertNotNull($obj->id);
@@ -89,7 +88,7 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
      * Buscando un registro
      */
     public function testgetId(){
-        $obj = ModelExample::findId(5);
+        $obj = ModelExample::findId(1);
         $this->assertNotNull($obj);
         $this->assertNotNull($obj->id);
         $this->assertNotNull($obj->name);
@@ -98,14 +97,14 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
      * Editar objeto
      */
     public function testgetIdEdit(){
-        $obj = ModelExample::findId(5);
+        $obj = ModelExample::findId(1);
         $this->assertNotNull($obj);
         $this->assertNotNull($obj->id);
         $this->assertNotNull($obj->name);
         $obj->name = "prueba";
         $obj->save();
         $stm = self::$schema->prepare(
-            "SELECT * FROM prueba WHERE id = ?", [5]);
+            "SELECT * FROM prueba WHERE id = ?", [1]);
         $compare = $stm->fetch(\PDO::FETCH_OBJ);
         $this->assertEquals($compare->pg_name, $obj->name);
     }
@@ -113,7 +112,7 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
      * Eliminar objeto
      */
     public function testgetIdRemove(){
-        $obj = ModelExample::findId(5);
+        $obj = ModelExample::findId(1);
         $this->assertNotNull($obj);
         $this->assertNotNull($obj->id);
         $this->assertNotNull($obj->name);

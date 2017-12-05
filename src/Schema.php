@@ -63,6 +63,13 @@ class Schema{
         }
     }
     /**
+     * Obtener id del ultimo registro insertado
+     * @return int
+     */
+    public function getIdInsert($id = NULL){
+        return $this->database->lastInsertId($id);
+    }
+    /**
      * Obtiene información del motor de la base de datos activa
      */
     public function getDriver(){
