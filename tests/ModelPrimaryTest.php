@@ -79,7 +79,7 @@ class ModalPrimaryTest extends \PHPUnit\Framework\TestCase
         $this->assertNotNull($obj->getContainer());
         $this->assertNull($obj->notExist);
         $stm = self::$schema->prepare(
-            "SELECT * FROM prueba2 WHERE id = ?", [1]);
+            "SELECT * FROM prueba2 WHERE prueba2_id = ?", [1]);
         $compare = $stm->fetch(\PDO::FETCH_OBJ);
         $this->assertEquals($compare->prueba2_id, $obj->id);
     }
@@ -104,7 +104,7 @@ class ModalPrimaryTest extends \PHPUnit\Framework\TestCase
         $obj->notExist = "no debe añadirse";
         $obj->save();
         $stm = self::$schema->prepare(
-            "SELECT * FROM prueba2 WHERE id = ?", [1]);
+            "SELECT * FROM prueba2 WHERE prueba2_id = ?", [1]);
         $compare = $stm->fetch(\PDO::FETCH_OBJ);
         $this->assertEquals($compare->pg_name, $obj->name);
     }
@@ -118,7 +118,7 @@ class ModalPrimaryTest extends \PHPUnit\Framework\TestCase
         $this->assertNotNull($obj->name);
         $obj->remove();
         $stm = self::$schema->prepare(
-            "SELECT * FROM prueba2 WHERE id = ?", [5]);
+            "SELECT * FROM prueba2 WHERE prueba2_id = ?", [5]);
         $compare = $stm->fetch(\PDO::FETCH_OBJ);
         $this->assertFalse($compare);
     }

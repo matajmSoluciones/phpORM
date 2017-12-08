@@ -11,7 +11,8 @@ class PrimaryModel extends Models
     public $id = [
         "type" => AutoIncrementField::class,
         "size" => 80,
-        "db_column" => "prueba2_id"
+        "db_column" => "prueba2_id",
+        "primary_key" => true
     ];
     public $name = [
         "type" => StringField::class,
