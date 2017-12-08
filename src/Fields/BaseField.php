@@ -4,13 +4,13 @@ namespace phpORM\Fields;
 class BaseField{
     protected $column_type;
     protected $column_size;
-    protected $null = false;
+    protected $null = true;
     protected $db_column;
     protected $optional = NULL;
     private $name = NULL;
     private $constraints = [];
     private $middleware;
-    public function __construct($MDBS, $db_column, $size=NULL, $null=false){
+    public function __construct($MDBS, $db_column, $size=NULL, $null=true){
         $this->db_column = $db_column;
         if ($size) {
             $this->column_size = $size;
