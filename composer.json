@@ -15,6 +15,9 @@
             "Tests\\": "tests/"
         }
     },
+    "scripts": {
+        "test": "phpunit --coverage-html reports --whitelist src/ -v"
+    },
     "require": {
         "php": ">=5.6.0"
     },
