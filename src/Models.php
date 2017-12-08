@@ -53,6 +53,9 @@ abstract class Models{
             if (isset($column["null"])) {
                 $db_null = $column["null"];
             }
+            if (isset($column["primary_key"])) {
+                $db_null = false;
+            }
             $fieldClass = new $column["type"]($MSB, $db_column, $db_size, $db_null);
             if (isset($column["primary_key"])) {
                 $constraint = new Fields\PrimaryKey(uniqid(), $db_column);
