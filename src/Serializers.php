@@ -30,16 +30,19 @@ class Serializers{
         }
     }
     public function __set($key, $value){
+        if(!isset($this->metas[$key])){
+            return;
+        }
         $this->obj[$key] = $value;
         if ($this->inserted) {
             $this->update = true;
         }
     }
     public function __get($key){
-        if(array_key_exists($key, $this->obj)){
-            return $this->obj[$key];
+        if(!array_key_exists($key, $this->obj)){
+            return null;
         }
-        return null;
+        return $this->obj[$key];
     }
     private function getField(){
         $keys = [];
@@ -93,6 +96,7 @@ class Serializers{
         $stm = $this->schema->prepare($SQL, $info["values"]);
         return $stm;
     }
+    /*
     protected function select(){
         $fields = [];
         foreach($this->metas as $key => $column){
@@ -109,7 +113,7 @@ class Serializers{
         $value[$this->pk_column[0]] = $str;
         $stm = $this->schema->prepare($SQL, $value);
         return $stm;
-    }
+    }*/
     public function remove(){
         $field = $this->pk_column[1]->get_column();
         $SQL = "DELETE FROM {$this->table} WHERE
