@@ -2,11 +2,17 @@
 namespace Tests;
 use \phpORM\Models;
 use \phpORM\Fields\StringField;
+use \phpORM\Fields\AutoIncrementField;
 
 //"sqlite::memory"
-class ModelExample extends Models
+class PrimaryModel extends Models
 {
-    protected static $table_name = "prueba";
+    protected static $table_name = "prueba2";
+    public $id = [
+        "type" => AutoIncrementField::class,
+        "size" => 80,
+        "db_column" => "prueba2_id"
+    ];
     public $name = [
         "type" => StringField::class,
         "size" => 80,
