@@ -12,4 +12,9 @@ class ModelExample extends Models
         "size" => 80,
         "db_column" => "pg_name"
     ];
+    public $firts_name = [
+        "type" => StringField::class,
+        "db_column" => "name",
+        "null" => true
+    ];
 }

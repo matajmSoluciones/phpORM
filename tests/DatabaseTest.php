@@ -12,17 +12,10 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
         Database::$username = 'web';
         Database::$password = '123';
         self::$schema = Database::getContainer();
-    }
-    /**
-     * Obtener ultima instancia de la db y crea una tabla.
-     */
-    public function testCreateModel(){
         ModelExample::createTable(true);
-        $table = ModelExample::getTableName();
-        $stm = self::$schema->query("SELECT * FROM pg_tables WHERE tablename = '{$table}';");
-        $compare = $stm->fetch(\PDO::FETCH_OBJ);
-        $this->assertNotNull($compare);
-        $this->assertEquals($compare->tablename, $table);
+    }
+    static function tearDownBeforeClass(){
+        ModelExample::dropTable(true);
     }
     /**
      * Obtener información del servidor
@@ -83,6 +76,8 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
         $this->assertNotNull($obj);
         $this->assertNotNull($obj->id);
         $this->assertNotNull($obj->name);
+        $this->assertNotNull($obj->getContainer());
+        $this->assertNull($obj->notExist);
     }
     /**
      * Buscando un registro
@@ -102,6 +97,7 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
         $this->assertNotNull($obj->id);
         $this->assertNotNull($obj->name);
         $obj->name = "prueba";
+        $obj->notExist = "no debe añadirse";
         $obj->save();
         $stm = self::$schema->prepare(
             "SELECT * FROM prueba WHERE id = ?", [1]);
@@ -137,7 +133,7 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
      */
     public function testDropModel(){
         $table = ModelExample::getTableName();
-        ModelExample::dropTable(true);
+        ModelExample::dropTable(false);
         $stm = self::$schema->query("SELECT * FROM pg_tables WHERE tablename = '{$table}';");
         $compare = $stm->fetch(\PDO::FETCH_OBJ);
         $this->assertFalse($compare);
