@@ -140,9 +140,16 @@ abstract class Models{
         }
         return $metas;
     }
-    protected static function select(){
+    protected static function select($columns=[]){
         $fields = [];
-        foreach(self::$meta_columns as $key => $column){
+        if(count($columns) == 0){
+            $columns = self::$meta_columns;
+        }
+        foreach($columns as $key => $column){
+            if(gettype($column) == "string") {
+                $fields[] = $column;
+                continue;
+            }
             $fields[] = "{$column->get_column()} as {$key}";
         }
         $sql = implode(", ", $fields);
@@ -165,8 +172,8 @@ abstract class Models{
         }
         return $SQL;
     }
-    protected static function SQLQueryGet($filters=[], $operador = "=", $conditional="AND"){
-        $SQL = self::select();
+    protected static function SQLQueryGet($filters=[], $operador = "=", $conditional="AND", $columns=[]){
+        $SQL = self::select($columns);
         if(count($filters) > 0){
             $SQL.= " ".self::where($filters, $operador, $conditional);
         }
@@ -191,6 +198,11 @@ abstract class Models{
         $row = $query->fetch(\PDO::FETCH_ASSOC);
         $metas = self::getMetas();
         return  new Serializers($row, $metas, static::$table_name, self::$column_index, true);
+    }
+    public static function count($filters=[], $operador = "=", $conditional="AND"){
+        $query = self::SQLQueryGet($filters, $operador, $conditional, ["COUNT(*) as counter"]);
+        $row = $query->fetch(\PDO::FETCH_OBJ);
+        return (int)$row->counter;
     }
     public static function findId($id){
         $filters = [];

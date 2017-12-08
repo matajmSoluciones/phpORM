@@ -22,7 +22,7 @@ class Schema{
      *  Prepara una sentencia para su ejecución
      * @return \PDOStatement
      */
-    public function prepare($SQL, $INPUT){
+    public function prepare($SQL, $INPUT=[]){
         try{
             $stm = $this->database->prepare($SQL);
             $query = $stm->execute($INPUT);

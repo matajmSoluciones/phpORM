@@ -123,6 +123,16 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse($compare);
     }
     /**
+     * Contar objetos
+     */
+    public function testgetCount(){
+        $obj = ModelExample::count();
+        $stm = self::$schema->prepare(
+            "SELECT COUNT(*) as counter FROM prueba");
+        $compare = $stm->fetch(\PDO::FETCH_OBJ);
+        $this->assertEquals($compare->counter, $obj);
+    }
+    /**
      * Obtener ultima instancia de la db y eliminar una tabla.
      */
     public function testDropModel(){
