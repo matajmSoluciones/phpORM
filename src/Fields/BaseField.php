@@ -10,9 +10,11 @@ class BaseField{
     private $name = NULL;
     private $constraints = [];
     private $middleware;
-    public function __construct($MDBS, $db_column, $size, $null=false){
+    public function __construct($MDBS, $db_column, $size=NULL, $null=false){
         $this->db_column = $db_column;
-        $this->column_size = $size;
+        if ($size) {
+            $this->column_size = $size;
+        }
         $this->null = $null;
         $parse_function = NULL;
         $sql_function = NULL;
