@@ -75,4 +75,10 @@ class Schema{
     public function getDriver(){
         return $this->database->getAttribute(\PDO::ATTR_DRIVER_NAME);
     }
+    /**
+     * Obtener la instancia PDO de la conexion
+     */
+    public function getConnect(){
+        return $this->database;
+    }
 }
