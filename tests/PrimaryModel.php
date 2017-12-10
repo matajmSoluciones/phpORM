@@ -25,4 +25,9 @@ class PrimaryModel extends Models
         "db_column" => "name",
         "null" => true
     ];
+    public $time = [
+        "type" => StringField::class,
+        "db_column" => "date_created",
+        "default" => "fecha actual"
+    ];
 }

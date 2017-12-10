@@ -51,6 +51,7 @@ class ModalPrimaryTest extends \PHPUnit\Framework\TestCase
         $obj->save();
         $this->assertNotNull($obj->id);
         $this->assertNotNull($obj->name);
+        $this->assertNotNull($obj->time);
         $this->assertInternalType("int", $obj->id);
     }
     /**

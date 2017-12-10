@@ -57,6 +57,17 @@ abstract class Models{
                 $db_null = false;
             }
             $fieldClass = new $column["type"]($MSB, $db_column, $db_size, $db_null);
+            if (isset($column["default"])) {
+                $fieldClass->addMiddleware(function ($str) use ($column){
+                    if (!empty($str)) {
+                        return $str;
+                    }
+                    if (is_callable($column["default"])) {
+                        return $column["default"]();
+                    }
+                    return $column["default"];
+                });
+            }
             if (isset($column["primary_key"]) && $column["primary_key"] = true) {
                 $constraint = new Fields\PrimaryKey(uniqid(), $db_column);
                 $fieldClass->addConstraints($constraint);

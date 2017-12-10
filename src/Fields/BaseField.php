@@ -40,9 +40,12 @@ class BaseField{
         return $SQL;
     }
     public function addMiddleware($middleware){
-        $this->middlewares->add($middleware);
+        $this->middleware->add($middleware);
     }
     public function getMiddlewares(){
         return $this->middleware;
+    }
+    public function defaultMiddleware($callback){
+        $this->middleware->default($callback);
     }
 }

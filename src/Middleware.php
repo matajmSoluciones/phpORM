@@ -5,6 +5,7 @@ class Middleware{
     private $middlewares = [];
     private $parse_function;
     private $sql_function;
+    private $default;
     private $meta;
     public function __construct($meta, $args = []){
         $this->middlewares = $args;
@@ -17,7 +18,10 @@ class Middleware{
         }
         foreach($this->middlewares as $middleware){
             if (is_callable($middleware)) {
-                $middleware($str);                
+                $value = $middleware($str);
+                if (!empty($value)) {
+                    $str = $value;
+                }
             }
         }
         return $str;

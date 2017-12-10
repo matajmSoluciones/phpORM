@@ -21,11 +21,17 @@ class Serializers{
     }
     private function asign_obj($args){
         foreach($this->metas as $key => $column){
-            if(!isset($args[$key])){
-                continue;
+            $input = NULL;
+            if (isset($args[$key])) {
+                $input = $args[$key];
             }
             $middleware = $column->getMiddlewares();
-            $value = $middleware($args[$key]);
+            $value = $middleware($input);
+            //var_dump($key, $value);
+            if(empty($value)){
+                $this->obj[$key] = NULL;
+                continue;
+            }
             $this->obj[$key] = $value;
         }
     }
@@ -49,7 +55,7 @@ class Serializers{
         $obj = [];
         $values = [];
         foreach($this->obj as $key => $value){
-            if(!isset($this->metas[$key])){
+            if(!isset($this->metas[$key]) || empty($value)){
                 continue;
             }
             $keys[] = $this->metas[$key]->get_column();
