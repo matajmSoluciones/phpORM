@@ -2,6 +2,15 @@
 
 Un sencillo y práctico ORM derivado de la instancia `\PDO`.
 
+## Requisitos
+
+* PDO
+* PHP 5.6+
+
+## Soporte de las bases de datos
+
+* Postgres 9.5+
+
 ## Instalación
 
     composer require matajm/php-orm
@@ -77,7 +86,7 @@ Para crear las tablas correspodientes puedes realizarlo uno a uno o usando el me
 
 ## Eliminar la tabla en la base de datos
 
-Para eliminar las tablas correspodientes puedes realizarlo uno a uno o usando el metodo `Database::createTables`
+Para eliminar las tablas correspodientes puedes realizarlo uno a uno o usando el metodo `Database::dropTable`
 
 ```php
     Animal::dropTable() # elimina la tabla animal
