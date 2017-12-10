@@ -2,14 +2,18 @@
 
 Un sencillo y práctico ORM derivado de la instancia `\PDO`.
 
+## Instalación
+
+    composer require matajm/php-orm
+
 ## Establece la conexión de la base de datos
 
 Para establecer la conexión de la base de datos solo usa los siguientes comandos en la cabecera inicial del archivo.
 
 ```php
     Database::$dns = 'pgsql:port=[port];host=[host];dbname=[db_name]';
-        Database::$username = 'Ingrese su usuario';
-        Database::$password = 'Contraseña';
+    Database::$username = 'Ingrese su usuario';
+    Database::$password = 'Contraseña';
 ```
 
 Estas tres lineas representan la configuración inicial del ORM.
@@ -81,4 +85,48 @@ Para eliminar las tablas correspodientes puedes realizarlo uno a uno o usando el
         Animal::class,
         Perro::class
     ]) # crea todas las tablas
+```
+
+## Crear un objeto
+
+Crear un objeto Serializers no inserta un registro en la base de datos, sino genera un objeto representativo del esquema de la base de datos para persistir los cambios deberá usar el metodo `Serializers::save()`.
+
+```php
+    $mascota = Perro::create([
+        "name" => "Punky",
+    ]);
+    $mascota->name
+    #Punky
+    $mascota->id
+    #NULL
+    $mascota->save() # Inserta el registro
+    $mascota->id
+    # 1
+```
+
+El metodo `Serializers::save()` registra todos los cambios, en caso de no existir el registro lo inserta y en caso de detectarse cambios actualiza el registro.
+
+```php
+    $mascota->name = "Bolt";
+    $mascota->save();
+```
+
+## Eliminar un registro
+
+El metodo `Serializers::remove()` elimina el objeto de la base de datos.
+
+```php
+    $mascota->remove();
+    $mascota->save(); # IntegrityError no existe
+```
+
+## Buscar registros
+
+Para buscar registros existen tres metodos de acuerdo a las necesidades de busqueda
+
+```php
+    Perro::find() # busca todos los registros
+    Perro::findOne() #  busca un registro
+
+    Perro::findId(1) #busca el registro que posea la clave id 1
 ```
