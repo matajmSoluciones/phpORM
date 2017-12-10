@@ -149,6 +149,10 @@ abstract class Models{
         $obj = new Serializers($args, $metas, static::$table_name, self::$column_index);
         return $obj;
     }
+    /**
+     * Obtiene una lista de las columnas del modelo.
+     * @return \phpORM\Fields\BaseField
+     */
     protected static function getMetas(){
         $metas = [];
         foreach(self::$meta_columns as $key => $column){
@@ -156,6 +160,10 @@ abstract class Models{
         }
         return $metas;
     }
+    /**
+     * Genera el SQL de la consulta
+     * @return string
+     */
     protected static function select($columns=[]){
         $fields = [];
         if(count($columns) == 0){
@@ -173,6 +181,10 @@ abstract class Models{
         $SQL = "SELECT {$sql} FROM {$table}";
         return $SQL;
     }
+    /**
+     * Genera la consulta SQL de la condicional.
+     * @return string
+     */
     protected static function where($filters=[], $operador = "=", $conditional="AND"){
         $SQL = "";
         if (count($filters) > 0) {
@@ -188,6 +200,10 @@ abstract class Models{
         }
         return $SQL;
     }
+    /**
+     * Genera la consulta SQL completa a partir de las condicionales.
+     * @return \PDOStament
+     */
     protected static function SQLQueryGet($filters=[], $operador = "=", $conditional="AND", $columns=[]){
         $SQL = self::select($columns);
         if(count($filters) > 0){
@@ -197,6 +213,13 @@ abstract class Models{
         $query = $schema->prepare($SQL, $filters);
         return $query;
     }
+    /**
+     * Busqueda simple global del modelo
+     * @param Array[mixed] $filter
+     * @param string $operador
+     * @param string $conditional
+     * @return Array[\phpORM\Serializers]
+     */
     public static function find($filters=[], $operador = "=", $conditional="AND"){
         $query = self::SQLQueryGet($filters, $operador, $conditional);
         $rows = $query->fetchAll(\PDO::FETCH_ASSOC);
@@ -206,6 +229,13 @@ abstract class Models{
         }
         return  $rows;
     }
+    /**
+     * Busqueda de un registro
+     * @param Array[mixed] $filter
+     * @param string $operador
+     * @param string $conditional
+     * @return \phpORM\Serializers
+     */
     public static function findOne($filters=[], $operador = "=", $conditional="AND"){
         $query = self::SQLQueryGet($filters, $operador, $conditional);
         if($query->rowCount() == 0){
@@ -215,11 +245,23 @@ abstract class Models{
         $metas = self::getMetas();
         return  new Serializers($row, $metas, static::$table_name, self::$column_index, true);
     }
+    /**
+     * Contador de registros
+     * @param Array[mixed] $filter
+     * @param string $operador
+     * @param string $conditional
+     * @return int
+     */
     public static function count($filters=[], $operador = "=", $conditional="AND"){
         $query = self::SQLQueryGet($filters, $operador, $conditional, ["COUNT(*) as counter"]);
         $row = $query->fetch(\PDO::FETCH_OBJ);
         return (int)$row->counter;
     }
+    /**
+     * Busqueda de un registro
+     * @param mixed $id
+     * @return \phpORM\Serializers
+     */
     public static function findId($id){
         $filters = [];
         $filters[self::$column_index[0]] = $id;
