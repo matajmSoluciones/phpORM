@@ -28,6 +28,15 @@ abstract class Database{
         }
         return self::$database;
     }
-    public static function createTables(){
+    /**
+     * Crea las tablas del modelo de datos
+     * @param $models \phpORM\Models
+     * @param $silen boolean
+     * @return void
+     */
+    public static function createTables($models, $silen=false){
+       foreach($models as $model) {
+           $model::createTable($silen);
+       }
     }
 }
