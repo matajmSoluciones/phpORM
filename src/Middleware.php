@@ -11,6 +11,11 @@ class Middleware{
         $this->middlewares = $args;
         $this->meta = $meta;
     }
+    /**
+     * Evalua la entrada de la columna del modelo
+     * @param string $str
+     * @return mixed
+     */
     public function __invoke($str){
         $str;
         if(method_exists($this->meta, "obj_value")){
@@ -26,12 +31,21 @@ class Middleware{
         }
         return $str;
     }
+    /**
+     * Evalua el valor del objeto en SQL.
+     * @param string $str
+     * @return string
+     */
     public function parseVal($str){
         if(method_exists($this->meta, "sql_value")){
             $str = $this->meta->sql_value($str);
         }
         return $str;
     }
+    /**
+     * Añade una función de validación al middleware
+     * @param function $middleware
+     */
     public function add($middleware){
         $this->middlewares[] = $middleware;
     }
