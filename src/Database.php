@@ -39,4 +39,15 @@ abstract class Database{
            $model::createTable($silen);
        }
     }
+    /**
+     * Elimina las tablas del modelo de datos
+     * @param $models \phpORM\Models
+     * @param $silen boolean
+     * @return void
+     */
+    public static function dropTables($models, $silen=false){
+       foreach($models as $model) {
+           $model::dropTable($silen);
+       }
+    }
 }
