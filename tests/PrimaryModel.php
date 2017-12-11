@@ -3,6 +3,7 @@ namespace Tests;
 use \phpORM\Models;
 use \phpORM\Fields\StringField;
 use \phpORM\Fields\AutoIncrementField;
+use \phpORM\Fields\UUIDField;
 use \phpORM\Fields\DateTimeField;
 use \phpORM\Utils\Timezone;
 
@@ -31,5 +32,10 @@ class PrimaryModel extends Models
         "type" => DateTimeField::class,
         "db_column" => "date_created",
         "default" => "\phpORM\Utils\Timezone::now"
+    ];
+    public $credential = [
+        "type" => UUIDField::class,
+        "db_column" => "key_uuid",
+        "default" => "\phpORM\Utils\UUID::v4"
     ];
 }

@@ -87,6 +87,8 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
         $this->assertNotNull($obj);
         $this->assertNotNull($obj->id);
         $this->assertNotNull($obj->name);
+        $json = json_encode($obj);
+        $this->assertNotNull($json);
     }
     /**
      * Editar objeto

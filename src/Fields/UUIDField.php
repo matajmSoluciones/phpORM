@@ -2,5 +2,5 @@
 namespace phpORM\Fields;
 
 class UUIDField extends StringField{
-    protected $column_size = 38;
+    protected $column_size = 36;
 }

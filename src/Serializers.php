@@ -1,7 +1,7 @@
 <?php
 namespace phpORM;
 
-class Serializers{
+class Serializers implements \JsonSerializable{
     private $schema;
     private $update = false;
     private $inserted = false;
@@ -151,6 +151,9 @@ class Serializers{
      */
     public function getContainer(){
         return $this->schema;
+    }
+    public function jsonSerialize() {
+        return $this->obj;
     }
     public function __debugInfo(){
         return $this->obj;
