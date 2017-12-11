@@ -37,39 +37,16 @@ abstract class Models{
         $pk_primary = [];
         foreach($columns as $key){
             $column = $attr[$key];
-            $db_column = $key;
-            $db_size = NULL;
-            $db_null = false;
             if(!isset($column["type"])){
                 throw new Exception\IntegrityError(
                     "Es necesaria especificar el tipo de dato para el campo {$key}");
             }
-            if (isset($column["db_column"])) {
-                $db_column = $column["db_column"];
+            if (!isset($column["db_column"])) {
+                $column["db_column"] = $key;
             }
-            if (isset($column["size"])) {
-                $db_size = $column["size"];
-            }
-            if (isset($column["null"])) {
-                $db_null = $column["null"];
-            }
-            if (isset($column["primary_key"]) && $column["primary_key"] == true) {
-                $db_null = false;
-            }
-            $fieldClass = new $column["type"]($MSB, $db_column, $db_size, $db_null);
-            if (isset($column["default"])) {
-                $fieldClass->addMiddleware(function ($str) use ($column){
-                    if (!empty($str)) {
-                        return $str;
-                    }
-                    if (is_callable($column["default"])) {
-                        return $column["default"]();
-                    }
-                    return $column["default"];
-                });
-            }
+            $fieldClass = new $column["type"]($MSB, $column);
             if (isset($column["primary_key"]) && $column["primary_key"] = true) {
-                $constraint = new Fields\PrimaryKey(uniqid(), $db_column);
+                $constraint = new Fields\PrimaryKey(uniqid(), $column["db_column"]);
                 $fieldClass->addConstraints($constraint);
                 static::$pk_primary[] = $constraint;
                 if (!static::$column_index) {
@@ -80,7 +57,11 @@ abstract class Models{
             static::$meta_columns[$key] = $fieldClass;
         }
         if(count(static::$pk_primary) == 0){
-            $fieldClass = new Fields\AutoIncrementField($MSB, "id", 8, false);
+            $fieldClass = new Fields\AutoIncrementField($MSB, [
+                "db_column" => "id",
+                "size" => 8,
+                "null" => false
+            ]);
             $constraint = new Fields\PrimaryKey(uniqid(), "id");
             $fieldClass->addConstraints($constraint);
             static::$columns[] = $fieldClass;

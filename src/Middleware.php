@@ -18,9 +18,6 @@ class Middleware{
      */
     public function __invoke($str){
         $str;
-        if(method_exists($this->meta, "obj_value")){
-            $str = $this->meta->obj_value($str);
-        }
         foreach($this->middlewares as $middleware){
             if (is_callable($middleware)) {
                 $value = $middleware($str);
@@ -28,6 +25,9 @@ class Middleware{
                     $str = $value;
                 }
             }
+        }
+        if(method_exists($this->meta, "obj_value")){
+            $str = $this->meta->obj_value($str);
         }
         return $str;
     }

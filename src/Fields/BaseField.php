@@ -4,21 +4,37 @@ namespace phpORM\Fields;
 class BaseField{
     protected $column_type;
     protected $column_size;
-    protected $null = true;
+    protected $null = false;
     protected $db_column;
     protected $optional = NULL;
     private $name = NULL;
     private $constraints = [];
     private $middleware;
-    public function __construct($MDBS, $db_column, $size=NULL, $null=true){
-        $this->db_column = $db_column;
-        if ($size) {
-            $this->column_size = $size;
+    public function __construct($MDBS, $args){
+        if (isset($args["db_column"])) {
+            $this->db_column = $args["db_column"];
         }
-        $this->null = $null;
-        $parse_function = NULL;
-        $sql_function = NULL;
+        if (isset($args["size"])) {
+            $this->column_size = $args["size"];
+        }
+        if (isset($args["null"])) {
+            $this->null = $args["null"];
+        }
+        if (isset($args["primary_key"])  && $args["primary_key"] == true) {
+            $this->null = false;
+        }
         $this->middleware = new \phpORM\Middleware($this);
+        if (isset($args["default"])) {
+            $this->middleware->add(function ($str) use ($args){
+                if (!empty($str)) {
+                    return $str;
+                }
+                if (is_callable($args["default"])) {
+                    return $args["default"]();
+                }
+                return $args["default"];
+            });
+        }
     }
     public function get_column(){
         return $this->db_column;

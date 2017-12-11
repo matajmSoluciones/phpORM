@@ -4,8 +4,8 @@ namespace phpORM\Fields;
 class AutoIncrementField extends IntegerField{
     protected $column_type = "INT";
     protected $column_size = 8;
-    public function __construct($MDBS, $db_column, $size, $null=false){
-        parent::__construct($MDBS, $db_column, $size);
+    public function __construct($MDBS, $args){
+        parent::__construct($MDBS, $args);
         switch($MDBS){
             case "pgsql":
                 $this->column_type = "SERIAL";

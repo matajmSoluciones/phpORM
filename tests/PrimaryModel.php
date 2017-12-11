@@ -3,6 +3,8 @@ namespace Tests;
 use \phpORM\Models;
 use \phpORM\Fields\StringField;
 use \phpORM\Fields\AutoIncrementField;
+use \phpORM\Fields\DateTimeField;
+use \phpORM\Utils\Timezone;
 
 //"sqlite::memory"
 class PrimaryModel extends Models
@@ -26,8 +28,8 @@ class PrimaryModel extends Models
         "null" => true
     ];
     public $time = [
-        "type" => StringField::class,
+        "type" => DateTimeField::class,
         "db_column" => "date_created",
-        "default" => "fecha actual"
+        "default" => "\phpORM\Utils\Timezone::now"
     ];
 }
