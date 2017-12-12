@@ -39,6 +39,12 @@ class BaseField{
     public function get_column(){
         return $this->db_column;
     }
+    public function get_type(){
+        return $this->column_type;
+    }
+    public function get_size(){
+        return $this->column_size;
+    }
     public function addConstraints($constraint){
         $this->constraints[] = $constraint;
     }

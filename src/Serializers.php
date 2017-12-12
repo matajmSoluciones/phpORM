@@ -27,7 +27,6 @@ class Serializers implements \JsonSerializable{
             }
             $middleware = $column->getMiddlewares();
             $value = $middleware($input);
-            //var_dump($key, $value);
             if(empty($value)){
                 $this->obj[$key] = NULL;
                 continue;
@@ -157,5 +156,9 @@ class Serializers implements \JsonSerializable{
     }
     public function __debugInfo(){
         return $this->obj;
+    }
+    public function  __toString(){
+        var_dump($this->obj, $this->pk_column[0]);
+        return (string)$this->obj[$this->pk_column[0]];
     }
 }

@@ -12,10 +12,12 @@ class ModalPrimaryTest extends \PHPUnit\Framework\TestCase
         Database::$username = 'web';
         Database::$password = '123';
         self::$schema = Database::getContainer();
+        ModelExample::createTable(true);
         PrimaryModel::createTable(true);
     }
     static function tearDownBeforeClass(){
         PrimaryModel::dropTable(true);
+        ModelExample::dropTable(true);
     }
     /**
      * Obtener información del servidor
@@ -44,8 +46,13 @@ class ModalPrimaryTest extends \PHPUnit\Framework\TestCase
      * a partir del modelo
      */
     public function testCreateObj(){
+        $foreign = ModelExample::create([
+            "name" => "probando"
+        ]);
+        $foreign->save();
         $obj = PrimaryModel::create([
-            "name" => "hola"
+            "name" => "hola",
+            "foreign" => $foreign
         ]);
         $this->assertNotNull($obj);
         $obj->save();

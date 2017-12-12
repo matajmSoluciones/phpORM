@@ -5,6 +5,7 @@ use \phpORM\Fields\StringField;
 use \phpORM\Fields\AutoIncrementField;
 use \phpORM\Fields\UUIDField;
 use \phpORM\Fields\DateTimeField;
+use \phpORM\Fields\ForeignKeyField;
 use \phpORM\Utils\Timezone;
 
 //"sqlite::memory"
@@ -38,4 +39,9 @@ class PrimaryModel extends Models
         "db_column" => "key_uuid",
         "default" => "\phpORM\Utils\UUID::v4"
     ];
+  /*  public $foreign = [
+        "type" => ForeignKeyField::class,
+        "db_column" => "foreign_db",
+        "relate_model" => ModelExample::class
+    ];*/
 }

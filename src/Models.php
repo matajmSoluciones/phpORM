@@ -8,12 +8,8 @@ abstract class Models{
      * @var $table_name string
      * @var $columns Array[phpORM\Fields\BaseField]
      */
-    protected static $pk_primary = [];
     protected $schema;
     protected static $table_name;
-    protected static $columns = [];
-    protected static $meta_columns = [];
-    protected static $column_index;
     /**
      * Genera el esquema de la base de datos
      * @param $schema \phpORM\Schema
@@ -21,21 +17,17 @@ abstract class Models{
     protected static function getModelColumns($schema){
         $attr = get_class_vars(static::class);
         $ignore = [
-            "pk_primary",
             "schema",
-            "comands",
-            "table_name",
-            "columns",
-            "meta_columns",
-            "column_index"
+            "table_name"
         ];
-        $columns = array_diff(array_keys($attr), $ignore);
-        self::$columns = [];
-        self::$column_index = [];
-        static::$pk_primary = [];
+        $keys_columns = array_diff(array_keys($attr), $ignore);
+        $columns = [];
+        $column_index = [];
+        $pk_primary = [];
+        $meta_columns = [];
         $MSB = $schema->getDriver();
         $pk_primary = [];
-        foreach($columns as $key){
+        foreach($keys_columns as $key){
             $column = $attr[$key];
             if(!isset($column["type"])){
                 throw new Exception\IntegrityError(
@@ -48,15 +40,15 @@ abstract class Models{
             if (isset($column["primary_key"]) && $column["primary_key"] = true) {
                 $constraint = new Fields\PrimaryKey(uniqid(), $column["db_column"]);
                 $fieldClass->addConstraints($constraint);
-                static::$pk_primary[] = $constraint;
-                if (!static::$column_index) {
-                    static::$column_index = [$key, $fieldClass];
+                $pk_primary[] = $constraint;
+                if (!$column_index) {
+                    $column_index = [$key, $fieldClass];
                 }
             }
-            static::$columns[] = $fieldClass;
-            static::$meta_columns[$key] = $fieldClass;
+            $columns[] = $fieldClass;
+            $meta_columns[$key] = $fieldClass;
         }
-        if(count(static::$pk_primary) == 0){
+        if(count($pk_primary) == 0){
             $fieldClass = new Fields\AutoIncrementField($MSB, [
                 "db_column" => "id",
                 "size" => 8,
@@ -64,13 +56,20 @@ abstract class Models{
             ]);
             $constraint = new Fields\PrimaryKey(uniqid(), "id");
             $fieldClass->addConstraints($constraint);
-            static::$columns[] = $fieldClass;
-            static::$pk_primary[] = $constraint;
-            static::$meta_columns["id"] = $fieldClass;
-            if (!static::$column_index) {
-                static::$column_index = ["id", $fieldClass];
+            $columns[] = $fieldClass;
+            $pk_primary[] = $constraint;
+            $meta_columns["id"] = $fieldClass;
+            if (!$column_index) {
+                $column_index = ["id", $fieldClass];
             }
         }
+        return [
+            "columns" => $columns,
+            "constraints" => $pk_primary,
+            "column_index" => $column_index,
+            "table_name" => static::getTableName(),
+            "metas" => $meta_columns
+        ];
     }
     /**
      * Obtiene el nombre de la tabla en la base de datos
@@ -86,10 +85,10 @@ abstract class Models{
      */
     public static function createTable($safe=false){
         $schema = Database::getContainer();
-        self::getModelColumns($schema);
-        $table = static::$table_name;
-        $COLUMNS = implode(self::$columns, ",");
-        $CONSTRAINT = implode(self::$pk_primary, ",");
+        $datas = static::getModelColumns($schema);
+        $table = $datas["table_name"];
+        $COLUMNS = implode($datas["columns"], ",");
+        $CONSTRAINT = implode($datas["constraints"], ",");
         $SQL = "CREATE TABLE {$table} (
             {$COLUMNS},
             {$CONSTRAINT}
@@ -126,29 +125,44 @@ abstract class Models{
      * @return \phpORM\Serializers
      */
     public static function create($args){
-        $metas = self::getMetas();
-        $obj = new Serializers($args, $metas, static::$table_name, self::$column_index);
+        $schema = Database::getContainer();
+        $datas = static::getModelColumns($schema);
+        $metas = static::getMetas($datas);
+        $obj = new Serializers($args, $metas, $datas["table_name"], $datas["column_index"]);
         return $obj;
     }
     /**
      * Obtiene una lista de las columnas del modelo.
      * @return \phpORM\Fields\BaseField
      */
-    protected static function getMetas(){
+    public static function getMetas($datas=NULL){
+        if(!$datas) {
+            $schema = Database::getContainer();
+            $datas = static::getModelColumns($schema);
+        }
         $metas = [];
-        foreach(self::$meta_columns as $key => $column){
+        foreach($datas["metas"] as $key => $column){
             $metas[$key] = $column;
         }
         return $metas;
     }
     /**
+     * Obtiene el campo primario
+     * @return \phpORM\Fields\BaseField
+     */
+    public static function getPrimaryKey(){
+        $schema = Database::getContainer();
+        $datas = static::getModelColumns($schema);
+        return $datas["column_index"];
+    }
+    /**
      * Genera el SQL de la consulta
      * @return string
      */
-    protected static function select($columns=[]){
+    protected static function select($columns=[], $datas){
         $fields = [];
         if(count($columns) == 0){
-            $columns = self::$meta_columns;
+            $columns = $datas["metas"];
         }
         foreach($columns as $key => $column){
             if(gettype($column) == "string") {
@@ -166,15 +180,15 @@ abstract class Models{
      * Genera la consulta SQL de la condicional.
      * @return string
      */
-    protected static function where($filters=[], $operador = "=", $conditional="AND"){
+    protected static function where($filters=[], $operador = "=", $conditional="AND", $datas){
         $SQL = "";
         if (count($filters) > 0) {
             $actions = [];
             foreach($filters as $key => $value){
-                if(!isset(self::$meta_columns[$key])){
+                if(!isset($datas["metas"][$key])){
                     continue;
                 }
-                $column = self::$meta_columns[$key]->get_column();
+                $column = $datas["metas"][$key]->get_column();
                 $actions[] = "{$column} {$operador} :{$key}";
             }
             $SQL = "WHERE ".implode($conditional, $actions);
@@ -185,12 +199,11 @@ abstract class Models{
      * Genera la consulta SQL completa a partir de las condicionales.
      * @return \PDOStament
      */
-    protected static function SQLQueryGet($filters=[], $operador = "=", $conditional="AND", $columns=[]){
-        $SQL = self::select($columns);
+    protected static function SQLQueryGet($filters=[], $operador = "=", $conditional="AND", $columns=[], $datas, $schema){
+        $SQL = static::select($columns, $datas);
         if(count($filters) > 0){
-            $SQL.= " ".self::where($filters, $operador, $conditional);
+            $SQL.= " ".static::where($filters, $operador, $conditional, $datas);
         }
-        $schema = Database::getContainer();
         $query = $schema->prepare($SQL, $filters);
         return $query;
     }
@@ -202,11 +215,13 @@ abstract class Models{
      * @return Array[\phpORM\Serializers]
      */
     public static function find($filters=[], $operador = "=", $conditional="AND"){
-        $query = self::SQLQueryGet($filters, $operador, $conditional);
+        $schema = Database::getContainer();
+        $datas = static::getModelColumns($schema);
+        $query = static::SQLQueryGet($filters, $operador, $conditional, [], $datas, $schema);
         $rows = $query->fetchAll(\PDO::FETCH_ASSOC);
-        $metas = self::getMetas();
+        $metas = static::getMetas($datas);
         for ($i = 0, $n = count($rows); $i < $n; $i++) {
-            $rows[$i] = new Serializers($rows[$i], $metas, static::$table_name, self::$column_index, true);
+            $rows[$i] = new Serializers($rows[$i], $metas, $datas["table_name"], $datas["column_index"], true);
         }
         return  $rows;
     }
@@ -218,13 +233,15 @@ abstract class Models{
      * @return \phpORM\Serializers
      */
     public static function findOne($filters=[], $operador = "=", $conditional="AND"){
-        $query = self::SQLQueryGet($filters, $operador, $conditional);
+        $schema = Database::getContainer();
+        $datas = static::getModelColumns($schema);
+        $query = static::SQLQueryGet($filters, $operador, $conditional, [], $datas, $schema);
         if($query->rowCount() == 0){
             throw new Exceptions\DoesNotExistError("No existe un registro!");
         }
         $row = $query->fetch(\PDO::FETCH_ASSOC);
-        $metas = self::getMetas();
-        return  new Serializers($row, $metas, static::$table_name, self::$column_index, true);
+        $metas = static::getMetas($datas);
+        return  new Serializers($row, $metas, $datas["table_name"], $datas["column_index"], true);
     }
     /**
      * Contador de registros
@@ -234,7 +251,9 @@ abstract class Models{
      * @return int
      */
     public static function count($filters=[], $operador = "=", $conditional="AND"){
-        $query = self::SQLQueryGet($filters, $operador, $conditional, ["COUNT(*) as counter"]);
+        $schema = Database::getContainer();
+        $datas = static::getModelColumns($schema);
+        $query = static::SQLQueryGet($filters, $operador, $conditional, ["COUNT(*) as counter"], $datas, $schema);
         $row = $query->fetch(\PDO::FETCH_OBJ);
         return (int)$row->counter;
     }
@@ -244,9 +263,11 @@ abstract class Models{
      * @return \phpORM\Serializers
      */
     public static function findId($id){
+        $schema = Database::getContainer();
+        $datas = static::getModelColumns($schema);
         $filters = [];
-        $filters[self::$column_index[0]] = $id;
-        $row = self::findOne($filters);
+        $filters[$datas["column_index"][0]] = $id;
+        $row = static::findOne($filters);
         return $row;
     }
 }

@@ -14,14 +14,28 @@ class SchemaTest extends \PHPUnit\Framework\TestCase
         self::$schema = Database::getContainer();
     }
     static function tearDownBeforeClass(){
+        PrimaryModel::dropTable(true);
         ModelExample::dropTable(true);
     }
     /**
      * Obtener ultima instancia de la db y crea una tabla.
      */
     public function testCreateModel(){
+        ModelExample::dropTable(true);
         ModelExample::createTable(false);
         $table = ModelExample::getTableName();
+        $stm = self::$schema->query("SELECT * FROM pg_tables WHERE tablename = '{$table}';");
+        $compare = $stm->fetch(\PDO::FETCH_OBJ);
+        $this->assertNotNull($compare);
+        $this->assertEquals($compare->tablename, $table);
+    }
+    /**
+     * Obtener ultima instancia de la db y crea una tabla.
+     */
+    public function testCreateModelForeign(){
+        PrimaryModel::dropTable(true);
+        PrimaryModel::createTable(false);
+        $table = PrimaryModel::getTableName();
         $stm = self::$schema->query("SELECT * FROM pg_tables WHERE tablename = '{$table}';");
         $compare = $stm->fetch(\PDO::FETCH_OBJ);
         $this->assertNotNull($compare);
