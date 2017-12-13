@@ -158,7 +158,6 @@ class Serializers implements \JsonSerializable{
         return $this->obj;
     }
     public function  __toString(){
-        var_dump($this->obj, $this->pk_column[0]);
         return (string)$this->obj[$this->pk_column[0]];
     }
 }

@@ -39,9 +39,9 @@ class PrimaryModel extends Models
         "db_column" => "key_uuid",
         "default" => "\phpORM\Utils\UUID::v4"
     ];
-  /*  public $foreign = [
+    public $foreign = [
         "type" => ForeignKeyField::class,
         "db_column" => "foreign_db",
         "relate_model" => ModelExample::class
-    ];*/
+    ];
 }
