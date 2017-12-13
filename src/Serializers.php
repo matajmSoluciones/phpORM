@@ -152,7 +152,18 @@ class Serializers implements \JsonSerializable{
         return $this->schema;
     }
     public function jsonSerialize() {
-        return $this->obj;
+        $obj = [];
+        foreach($this->obj as $key => $value){
+            $obj[$key] = $value;
+            if(!isset($this->metas[$key])) {
+                continue;
+            }
+            if(!method_exists($this->metas[$key], "format")) {
+                continue;
+            }
+            $obj[$key] = $this->metas[$key]->format($value);
+        }
+        return $obj;
     }
     public function __debugInfo(){
         return $this->obj;

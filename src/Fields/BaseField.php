@@ -7,6 +7,7 @@ class BaseField{
     protected $null = false;
     protected $db_column;
     protected $optional = NULL;
+    protected $format = NULL;
     private $name = NULL;
     private $constraints = [];
     private $middleware;
@@ -19,6 +20,9 @@ class BaseField{
         }
         if (isset($args["null"])) {
             $this->null = $args["null"];
+        }
+        if (isset($args["format"])) {
+            $this->format = $args["format"];
         }
         if (isset($args["primary_key"])  && $args["primary_key"] == true) {
             $this->null = false;

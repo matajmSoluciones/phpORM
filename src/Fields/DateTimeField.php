@@ -16,6 +16,9 @@ class DateTimeField extends BaseField{
         }
         return $SQL;
     }
+    public function format($str) {
+        return $str->format($this->format);
+    }
     public function obj_value($str){
         if(gettype($str) == "object") {
             return $str;

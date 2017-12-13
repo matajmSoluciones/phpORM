@@ -60,9 +60,13 @@ class ModalPrimaryTest extends \PHPUnit\Framework\TestCase
         $this->assertNotNull($obj->name);
         $this->assertNotNull($obj->time);
         $this->assertNotNull($obj->credential);
+        $this->assertNotNull($obj->foreign);
+        $this->assertInstanceOf(\phpORM\Serializers::class, $obj->foreign);
         $this->assertTrue(\phpORM\Utils\UUID::is_valid($obj->credential));
         $this->assertInstanceOf(\DateTime::class, $obj->time);
         $this->assertInternalType("int", $obj->id);
+        $json = json_encode($obj);
+        var_dump($json);
     }
     /**
      * Buscando todos los registros
