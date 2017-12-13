@@ -27,7 +27,7 @@ class Serializers implements \JsonSerializable{
             }
             $middleware = $column->getMiddlewares();
             $value = $middleware($input);
-            if(empty($value)){
+            if(empty($value) && gettype($value) != "boolean"){
                 $this->obj[$key] = NULL;
                 continue;
             }
@@ -54,7 +54,8 @@ class Serializers implements \JsonSerializable{
         $obj = [];
         $values = [];
         foreach($this->obj as $key => $value){
-            if(!isset($this->metas[$key]) || empty($value)){
+            if(!isset($this->metas[$key]) || (
+                empty($value) && gettype($value) != "boolean")){
                 continue;
             }
             $keys[] = $this->metas[$key]->get_column();

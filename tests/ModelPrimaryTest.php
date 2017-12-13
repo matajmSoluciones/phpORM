@@ -52,7 +52,8 @@ class ModalPrimaryTest extends \PHPUnit\Framework\TestCase
         $foreign->save();
         $obj = PrimaryModel::create([
             "name" => "hola",
-            "foreign" => $foreign
+            "foreign" => $foreign,
+            "is_admin" => true
         ]);
         $this->assertNotNull($obj);
         $obj->save();
@@ -66,7 +67,7 @@ class ModalPrimaryTest extends \PHPUnit\Framework\TestCase
         $this->assertInstanceOf(\DateTime::class, $obj->time);
         $this->assertInternalType("int", $obj->id);
         $json = json_encode($obj);
-        var_dump($json);
+        $this->assertNotNull($json);
     }
     /**
      * Buscando todos los registros

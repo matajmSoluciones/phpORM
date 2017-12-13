@@ -6,6 +6,7 @@ use \phpORM\Fields\AutoIncrementField;
 use \phpORM\Fields\UUIDField;
 use \phpORM\Fields\DateTimeField;
 use \phpORM\Fields\ForeignKeyField;
+use \phpORM\Fields\BooleanField;
 use \phpORM\Utils\Timezone;
 
 //"sqlite::memory"
@@ -38,6 +39,13 @@ class PrimaryModel extends Models
         "type" => UUIDField::class,
         "db_column" => "key_uuid",
         "default" => "\phpORM\Utils\UUID::v4"
+    ];
+    public $is_exists = [
+        "type" => BooleanField::class,
+        "default" => false
+    ];
+    public $is_admin = [
+        "type" => BooleanField::class
     ];
     public $foreign = [
         "type" => ForeignKeyField::class,

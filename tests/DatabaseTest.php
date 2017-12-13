@@ -15,6 +15,7 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
         ModelExample::createTable(true);
     }
     static function tearDownBeforeClass(){
+        PrimaryModel::dropTable(true);
         ModelExample::dropTable(true);
     }
     /**
