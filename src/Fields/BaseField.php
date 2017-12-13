@@ -56,7 +56,11 @@ class BaseField{
         return $this->constraints;
     }
     public function __toString(){
-        $SQL = "{$this->db_column} {$this->column_type}({$this->column_size})";
+        $size= $this->column_size;
+        if (gettype($this->column_size) == "array") {
+            $size = implode(",", $this->column_size);
+        }
+        $SQL = "{$this->db_column} {$this->column_type}({$size})";
         if(!$this->null){
             $SQL.= " NOT NULL";
         }

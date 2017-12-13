@@ -2,6 +2,8 @@
 namespace Tests;
 use \phpORM\Models;
 use \phpORM\Fields\StringField;
+use \phpORM\Fields\DecimalField;
+use \phpORM\Fields\DateTimeField;
 
 //"sqlite::memory"
 class ModelExample extends Models
@@ -17,5 +19,16 @@ class ModelExample extends Models
         "type" => StringField::class,
         "db_column" => "name",
         "null" => true
+    ];
+    public $cost = [
+        "type" => DecimalField::class,
+        "default" => "10.252345",
+        "format" => "%.3f",
+        "size" => [10, 8]
+    ];
+    public $time = [
+        "type" => DateTimeField::class,
+        "db_column" => "date_created",
+        "default" => "\phpORM\Utils\Timezone::now"
     ];
 }
