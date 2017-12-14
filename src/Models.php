@@ -114,11 +114,16 @@ abstract class Models{
      * Elimina el modelo de la base de datos.
      * @param $safe boolean
      */
-    public static function dropTable($safe=false){
+    public static function dropTable($cascade=false, $safe=false){
         $table = static::$table_name;
         $schema = Database::getContainer();
+        $MSB = $schema->getDriver();
+        $SQL = "DROP TABLE {$table}";
+        if ($MSB == "pgsql" && $cascade == true) {
+            $SQL.= " CASCADE";
+        }
         try{
-            $schema->execute("DROP TABLE {$table};");
+            $schema->execute($SQL);
         }catch(Exception\IntegrityError $e){
             if($safe){
                 return;

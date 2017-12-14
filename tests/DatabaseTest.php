@@ -15,8 +15,8 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
         ModelExample::createTable(true);
     }
     static function tearDownBeforeClass(){
-        PrimaryModel::dropTable(true);
-        ModelExample::dropTable(true);
+        PrimaryModel::dropTable(true, true);
+        ModelExample::dropTable(true, true);
     }
     /**
      * Obtener información del servidor
@@ -136,7 +136,7 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
      */
     public function testDropModel(){
         $table = ModelExample::getTableName();
-        ModelExample::dropTable(false);
+        ModelExample::dropTable(true, false);
         $stm = self::$schema->query("SELECT * FROM pg_tables WHERE tablename = '{$table}';");
         $compare = $stm->fetch(\PDO::FETCH_OBJ);
         $this->assertFalse($compare);

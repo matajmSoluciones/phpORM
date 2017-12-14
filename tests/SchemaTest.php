@@ -14,14 +14,14 @@ class SchemaTest extends \PHPUnit\Framework\TestCase
         self::$schema = Database::getContainer();
     }
     static function tearDownBeforeClass(){
-        PrimaryModel::dropTable(true);
-        ModelExample::dropTable(true);
+        PrimaryModel::dropTable(true, true);
+        ModelExample::dropTable(true, true);
     }
     /**
      * Obtener ultima instancia de la db y crea una tabla.
      */
     public function testCreateModel(){
-        ModelExample::dropTable(true);
+        ModelExample::dropTable(true, true);
         ModelExample::createTable(false);
         $table = ModelExample::getTableName();
         $stm = self::$schema->query("SELECT * FROM pg_tables WHERE tablename = '{$table}';");
@@ -33,7 +33,7 @@ class SchemaTest extends \PHPUnit\Framework\TestCase
      * Obtener ultima instancia de la db y crea una tabla.
      */
     public function testCreateModelForeign(){
-        PrimaryModel::dropTable(true);
+        PrimaryModel::dropTable(true, true);
         PrimaryModel::createTable(false);
         $table = PrimaryModel::getTableName();
         $stm = self::$schema->query("SELECT * FROM pg_tables WHERE tablename = '{$table}';");

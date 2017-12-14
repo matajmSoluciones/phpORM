@@ -16,8 +16,8 @@ class ModalPrimaryTest extends \PHPUnit\Framework\TestCase
         PrimaryModel::createTable(true);
     }
     static function tearDownBeforeClass(){
-        PrimaryModel::dropTable(true);
-        ModelExample::dropTable(true);
+        PrimaryModel::dropTable(true, true);
+        ModelExample::dropTable(true, true);
     }
     /**
      * Obtener información del servidor
