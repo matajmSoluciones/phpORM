@@ -18,6 +18,12 @@ class ForeignKeyField extends BaseField{
             $this->column_type = "INT";
         }
     }
+    public function get_relate_model(){
+        return $this->relate_model;
+    }
+    public function get_foreign_key(){
+        return $this->foreign_key[0];
+    }
     public function __toString(){
         switch($this->column_type){
             case "INT":

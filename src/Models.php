@@ -26,7 +26,6 @@ abstract class Models{
         $pk_primary = [];
         $meta_columns = [];
         $MSB = $schema->getDriver();
-        $pk_primary = [];
         foreach($keys_columns as $key){
             $column = $attr[$key];
             if(!isset($column["type"])){
@@ -44,6 +43,15 @@ abstract class Models{
                 if (!$column_index) {
                     $column_index = [$key, $fieldClass];
                 }
+            }
+            if($fieldClass instanceof Fields\ForeignKeyField) {
+                $constraint = new Fields\ForeignKey(uniqid(),
+                    $column["db_column"],
+                    $fieldClass->get_relate_model()::getTableName(),
+                    $fieldClass->get_foreign_key()
+                );
+                $fieldClass->addConstraints($constraint);
+                $pk_primary[] = $constraint;
             }
             $columns[] = $fieldClass;
             $meta_columns[$key] = $fieldClass;
