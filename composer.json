@@ -3,12 +3,6 @@
     "description": "Simple ORM basado en PDO",
     "type": "library",
     "version": "0.0.1",
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/matajmSoluciones/phpORM.git"
-        }
-    ],
     "authors": [
         {
             "name": "Jhonny Mata",
