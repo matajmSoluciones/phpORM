@@ -24,7 +24,8 @@ class PrimaryModel extends Models
         "type" => StringField::class,
         "size" => 80,
         "db_column" => "pg_name",
-        "null" => true
+        "null" => true,
+        "unique" => true
     ];
     public $firts_name = [
         "type" => StringField::class,
