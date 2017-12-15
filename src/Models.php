@@ -44,6 +44,11 @@ abstract class Models{
                     $column_index = [$key, $fieldClass];
                 }
             }
+            if (isset($column["unique"]) && $column["unique"] = true) {
+                $constraint = new Fields\UniqueKey(uniqid(), $column["db_column"]);
+                $fieldClass->addConstraints($constraint);
+                $pk_primary[] = $constraint;
+            }
             if($fieldClass instanceof Fields\ForeignKeyField) {
                 $constraint = new Fields\ForeignKey(uniqid(),
                     $column["db_column"],
