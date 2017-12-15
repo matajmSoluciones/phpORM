@@ -53,7 +53,10 @@ class ModalPrimaryTest extends \PHPUnit\Framework\TestCase
         $obj = PrimaryModel::create([
             "name" => "hola",
             "foreign" => $foreign,
-            "is_admin" => true
+            "is_admin" => true,
+            "data" => [
+                "campo" => "valor"
+            ]
         ]);
         $this->assertNotNull($obj);
         $obj->save();
@@ -66,6 +69,7 @@ class ModalPrimaryTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue(\phpORM\Utils\UUID::is_valid($obj->credential));
         $this->assertInstanceOf(\DateTime::class, $obj->time);
         $this->assertInternalType("int", $obj->id);
+        $this->assertInternalType("array", $obj->data);
         $json = json_encode($obj);
         $this->assertNotNull($json);
     }
@@ -94,6 +98,7 @@ class ModalPrimaryTest extends \PHPUnit\Framework\TestCase
         $this->assertNotNull($obj->name);
         $this->assertNotNull($obj->getContainer());
         $this->assertNull($obj->notExist);
+        $this->assertInternalType("object", $obj->data);
         $stm = self::$schema->prepare(
             "SELECT * FROM prueba2 WHERE prueba2_id = ?", [1]);
         $compare = $stm->fetch(\PDO::FETCH_OBJ);

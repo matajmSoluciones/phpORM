@@ -7,6 +7,7 @@ use \phpORM\Fields\UUIDField;
 use \phpORM\Fields\DateTimeField;
 use \phpORM\Fields\ForeignKeyField;
 use \phpORM\Fields\BooleanField;
+use \phpORM\Fields\JSONField;
 use \phpORM\Utils\Timezone;
 
 //"sqlite::memory"
@@ -28,6 +29,11 @@ class PrimaryModel extends Models
     public $firts_name = [
         "type" => StringField::class,
         "db_column" => "name",
+        "null" => true
+    ];
+    public $data = [
+        "type" => JSONField::class,
+        "db_column" => "data",
         "null" => true
     ];
     public $time = [
