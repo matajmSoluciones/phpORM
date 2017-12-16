@@ -10,6 +10,7 @@ class BaseField{
     protected $format = NULL;
     private $name = NULL;
     private $exclude = false;
+    protected $db_field = true;
     private $constraints = [];
     private $middleware;
     public function __construct($MDBS, $args){
@@ -46,6 +47,9 @@ class BaseField{
     }
     public function get_column(){
         return $this->db_column;
+    }
+    public function isInsert(){
+        return $this->db_field;
     }
     public function get_exclude(){
         return $this->exclude;

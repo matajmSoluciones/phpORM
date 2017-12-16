@@ -4,6 +4,7 @@ use \phpORM\Models;
 use \phpORM\Fields\StringField;
 use \phpORM\Fields\DecimalField;
 use \phpORM\Fields\DateTimeField;
+use \phpORM\Fields\RelateModelField;
 
 //"sqlite::memory"
 class ModelExample extends Models
@@ -30,5 +31,12 @@ class ModelExample extends Models
         "type" => DateTimeField::class,
         "db_column" => "date_created",
         "default" => "\phpORM\Utils\Timezone::now"
+    ];
+    public $childrens = [
+        "type" => RelateModelField::class,
+        "db_column" => "id",
+        "column_foreign" => "parent",
+        "relate_model" => ChildrenModel::class,
+        "many" => true
     ];
 }

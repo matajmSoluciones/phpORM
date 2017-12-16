@@ -58,7 +58,9 @@ abstract class Models{
                 $fieldClass->addConstraints($constraint);
                 $pk_primary[] = $constraint;
             }
-            $columns[] = $fieldClass;
+            if ($fieldClass->isInsert()) {
+                $columns[] = $fieldClass;
+            }
             $meta_columns[$key] = $fieldClass;
         }
         if(count($pk_primary) == 0){
@@ -172,6 +174,15 @@ abstract class Models{
         $schema = Database::getContainer();
         $datas = static::getModelColumns($schema);
         return $datas["column_index"];
+    }
+    /**
+     * Obtiene el campo primario
+     * @return \phpORM\Fields\BaseField
+     */
+    public static function getColumn($key){
+        $schema = Database::getContainer();
+        $datas = static::getModelColumns($schema);
+        return $datas["metas"][$key];
     }
     /**
      * Genera el SQL de la consulta

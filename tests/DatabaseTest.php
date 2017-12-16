@@ -13,10 +13,12 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
         Database::$password = '123';
         self::$schema = Database::getContainer();
         ModelExample::createTable(true);
+        ChildrenModel::createTable(true);
     }
     static function tearDownBeforeClass(){
         PrimaryModel::dropTable(true, true);
         ModelExample::dropTable(true, true);
+        ChildrenModel::dropTable(true, true);
     }
     /**
      * Obtener información del servidor
@@ -84,12 +86,20 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
      * Buscando un registro
      */
     public function testgetId(){
+        $obj = ChildrenModel::create([
+            "name" => "registro 1",
+            "parent" => 1
+        ]);
+        $obj->save();
         $obj = ModelExample::findId(1);
         $this->assertNotNull($obj);
         $this->assertNotNull($obj->id);
         $this->assertNotNull($obj->name);
         $json = json_encode($obj);
         $this->assertNotNull($json);
+        foreach ($obj->childrens as $value) {
+            $value->remove();
+        }
     }
     /**
      * Editar objeto

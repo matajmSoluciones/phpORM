@@ -7,10 +7,14 @@ class ForeignKeyField extends BaseField{
     protected $relate_name;
     protected $relate_model;
     protected $foreign_key;
+    protected $recursive = true;
 
     public function __construct($MDBS, $args){
         parent::__construct($MDBS, $args);
         $this->relate_model = $args["relate_model"];
+        if (isset($args["recursive"])) {
+            $this->recursive = $args["recursive"];
+        }
         $this->foreign_key = $this->relate_model::getPrimaryKey();
         $this->column_type = $this->foreign_key[1]->get_type();
         $this->column_size = $this->foreign_key[1]->get_size();
@@ -42,7 +46,7 @@ class ForeignKeyField extends BaseField{
         }
     }
     public function obj_value($str){
-        if(gettype($str) == "object") {
+        if(gettype($str) == "object" || !$this->recursive) {
             return $str;
         }
         if(empty($str)) {

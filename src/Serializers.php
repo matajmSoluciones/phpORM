@@ -55,7 +55,8 @@ class Serializers implements \JsonSerializable{
         $values = [];
         foreach($this->obj as $key => $value){
             if(!isset($this->metas[$key]) || (
-                empty($value) && gettype($value) != "boolean")){
+                empty($value) && gettype($value) != "boolean")
+                || !$this->metas[$key]->isInsert()){
                 continue;
             }
             $keys[] = $this->metas[$key]->get_column();
