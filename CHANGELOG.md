@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.0.3] - 2017-12-15
+
+### FIXED
+
+- Error "lastval no está definido en esta sesión" campos primary key no autoincrementables.
+
 ## [0.0.2] - 2017-12-14
 
 ### ADDED

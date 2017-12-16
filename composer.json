@@ -2,7 +2,7 @@
     "name": "matajm/php-orm",
     "description": "Simple ORM basado en PDO",
     "type": "library",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "license": "MIT",
     "keywords": [
         "php",
@@ -11,12 +11,6 @@
         "phporm",
         "sql",
         "postgresql"
-    ],
-    "repositories": [
-        {
-            "type": "git",
-            "url": "https://github.com/matajmSoluciones/phpORM.git"
-        }
     ],
     "authors": [
         {
