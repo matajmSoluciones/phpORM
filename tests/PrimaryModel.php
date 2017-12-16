@@ -47,6 +47,12 @@ class PrimaryModel extends Models
         "db_column" => "key_uuid",
         "default" => "\phpORM\Utils\UUID::v4"
     ];
+    public $hiden = [
+        "type" => UUIDField::class,
+        "db_column" => "oculto_id",
+        "default" => "\phpORM\Utils\UUID::v4",
+        "exclude" => true
+    ];
     public $is_exists = [
         "type" => BooleanField::class,
         "default" => false

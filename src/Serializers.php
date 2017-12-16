@@ -161,6 +161,10 @@ class Serializers implements \JsonSerializable{
             if(!isset($this->metas[$key])) {
                 continue;
             }
+            if ($this->metas[$key]->get_exclude()) {
+                unset($obj[$key]);
+                continue;
+            }
             if(!method_exists($this->metas[$key], "format")) {
                 continue;
             }

@@ -9,6 +9,7 @@ class BaseField{
     protected $optional = NULL;
     protected $format = NULL;
     private $name = NULL;
+    private $exclude = false;
     private $constraints = [];
     private $middleware;
     public function __construct($MDBS, $args){
@@ -20,6 +21,9 @@ class BaseField{
         }
         if (isset($args["null"])) {
             $this->null = $args["null"];
+        }
+        if (isset($args["exclude"])) {
+            $this->exclude = $args["exclude"];
         }
         if (isset($args["format"])) {
             $this->format = $args["format"];
@@ -42,6 +46,9 @@ class BaseField{
     }
     public function get_column(){
         return $this->db_column;
+    }
+    public function get_exclude(){
+        return $this->exclude;
     }
     public function get_type(){
         return $this->column_type;

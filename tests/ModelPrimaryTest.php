@@ -38,7 +38,6 @@ class ModalPrimaryTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetDriver(){
         $str = self::$schema->getDriver();
-        //var_dump($str);
         $this->assertInternalType("string", $str);
     }
     /**
