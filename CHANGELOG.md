@@ -5,6 +5,8 @@
 ### ADDED
 
 - Soporte campo exclude para ocultamiento en Serializadores JSON
+- Añadido relaciones conceptuales para agrupación o asignación de objetos.
+- Añadido campo many para agrupación  de mucho a mucho en relaciones conceptuales.
 
 ### FIXED
 
