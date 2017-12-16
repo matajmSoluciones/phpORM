@@ -2,6 +2,10 @@
 
 ## [0.0.3] - 2017-12-15
 
+### ADDED
+
+- Soporte campo exclude para ocultamiento en Serializadores JSON
+
 ### FIXED
 
 - Error "lastval no está definido en esta sesión" campos primary key no autoincrementables.
