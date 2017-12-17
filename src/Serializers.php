@@ -22,8 +22,12 @@ class Serializers implements \JsonSerializable{
     private function asign_obj($args){
         foreach($this->metas as $key => $column){
             $input = NULL;
-            if (isset($args[$key])) {
-                $input = $args[$key];
+            $index = $column->get_index();
+            if (!$this->inserted) {
+                $index = $key;
+            }
+            if (isset($args[$index])) {
+                $input = $args[$index];
             }
             $middleware = $column->getMiddlewares();
             $value = $middleware($input);
