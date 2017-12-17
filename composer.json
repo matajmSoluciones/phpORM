@@ -2,7 +2,7 @@
     "name": "matajm/php-orm",
     "description": "Simple ORM basado en PDO",
     "type": "library",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "license": "MIT",
     "keywords": [
         "php",

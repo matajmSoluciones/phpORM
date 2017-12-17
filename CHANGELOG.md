@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.0.4] - 2017-12-17
+
+### FIXED
+
+- Error "no reconoce campos con claves mayusculas"
+- Error campo DateTimeField valor null no posee un formato valido!
+- Error excepcion no existe en campos relateModelField en null 
+
 ## [0.0.3] - 2017-12-15
 
 ### ADDED
