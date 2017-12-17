@@ -6,6 +6,7 @@ class BaseField{
     protected $column_size;
     protected $null = false;
     protected $db_column;
+    protected $column_index_t;
     protected $optional = NULL;
     protected $format = NULL;
     private $name = NULL;
@@ -13,7 +14,8 @@ class BaseField{
     protected $db_field = true;
     private $constraints = [];
     private $middleware;
-    public function __construct($MDBS, $args){
+    public function __construct($MDBS, $args, $index){
+        $this->column_index_t = "t{$index}";
         if (isset($args["db_column"])) {
             $this->db_column = $args["db_column"];
         }
@@ -47,6 +49,9 @@ class BaseField{
     }
     public function get_column(){
         return $this->db_column;
+    }
+    public function get_index(){
+        return $this->column_index_t;
     }
     public function isInsert(){
         return $this->db_field;

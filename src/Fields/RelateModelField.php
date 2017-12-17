@@ -10,8 +10,8 @@ class RelateModelField extends BaseField{
     protected $db_field = false;
     protected $many = false;
     protected $column_relate_key;
-    public function __construct($MDBS, $args){
-        parent::__construct($MDBS, $args);
+    public function __construct($MDBS, $args, $index){
+        parent::__construct($MDBS, $args, $index);
         $this->relate_model = $args["relate_model"];
         if (isset($args["many"])) {
             $this->many = $args["many"];
@@ -42,7 +42,11 @@ class RelateModelField extends BaseField{
         if ($this->many) {
             return $this->relate_model::find($filter);
         }
-        return $this->relate_model::findOne($filter);
+        try{
+            return $this->relate_model::findOne($filter);
+        }catch(\phpORM\Exception\DoesNotExistError $e){
+            return NULL;
+        }
     }
     public function sql_value($obj){
         return NULL;

@@ -9,8 +9,8 @@ class ForeignKeyField extends BaseField{
     protected $foreign_key;
     protected $recursive = true;
 
-    public function __construct($MDBS, $args){
-        parent::__construct($MDBS, $args);
+    public function __construct($MDBS, $args, $index){
+        parent::__construct($MDBS, $args, $index);
         $this->relate_model = $args["relate_model"];
         if (isset($args["recursive"])) {
             $this->recursive = $args["recursive"];
