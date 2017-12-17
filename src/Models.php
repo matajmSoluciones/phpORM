@@ -26,7 +26,7 @@ abstract class Models{
         $pk_primary = [];
         $meta_columns = [];
         $MSB = $schema->getDriver();
-        foreach($keys_columns as $key){
+        foreach($keys_columns as $index_column => $key){
             $column = $attr[$key];
             if(!isset($column["type"])){
                 throw new Exception\IntegrityError(
@@ -35,7 +35,7 @@ abstract class Models{
             if (!isset($column["db_column"])) {
                 $column["db_column"] = $key;
             }
-            $fieldClass = new $column["type"]($MSB, $column);
+            $fieldClass = new $column["type"]($MSB, $column, $index_column);
             if (isset($column["primary_key"]) && $column["primary_key"] = true) {
                 $constraint = new Fields\PrimaryKey(uniqid(), $column["db_column"]);
                 $fieldClass->addConstraints($constraint);
@@ -68,7 +68,7 @@ abstract class Models{
                 "db_column" => "id",
                 "size" => 8,
                 "null" => false
-            ]);
+            ], count($keys_columns));
             $constraint = new Fields\PrimaryKey(uniqid(), "id");
             $fieldClass->addConstraints($constraint);
             $columns[] = $fieldClass;
@@ -198,7 +198,7 @@ abstract class Models{
                 $fields[] = $column;
                 continue;
             }
-            $fields[] = "{$column->get_column()} as {$key}";
+            $fields[] = "{$column->get_column()} as {$column->get_index()}";
         }
         $sql = implode(", ", $fields);
         $table = static::$table_name;
@@ -220,7 +220,7 @@ abstract class Models{
                 $column = $datas["metas"][$key]->get_column();
                 $actions[] = "{$column} {$operador} :{$key}";
             }
-            $SQL = "WHERE ".implode($conditional, $actions);
+            $SQL = "WHERE ".implode(" {$conditional} ", $actions);
         }
         return $SQL;
     }
@@ -266,7 +266,7 @@ abstract class Models{
         $datas = static::getModelColumns($schema);
         $query = static::SQLQueryGet($filters, $operador, $conditional, [], $datas, $schema);
         if($query->rowCount() == 0){
-            throw new Exceptions\DoesNotExistError("No existe un registro!");
+            throw new Exception\DoesNotExistError("No existe un registro!");
         }
         $row = $query->fetch(\PDO::FETCH_ASSOC);
         $metas = static::getMetas($datas);
