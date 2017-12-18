@@ -3,6 +3,7 @@ namespace phpORM;
 
 class Schema{
     public $database;
+    private $auto_commit = true;
 
     public function __construct($database){
         $this->database = $database;
@@ -80,5 +81,20 @@ class Schema{
      */
     public function getConnect(){
         return $this->database;
+    }
+    public function begin(){
+        $this->auto_commit = false;
+        $this->database->beginTransaction();    
+    }
+    public function commit(){
+        $this->auto_commit = true;
+        $this->database->commit();
+    }
+    public function rollBack(){
+        $this->auto_commit = true;
+        $this->database->rollBack();
+    }
+    public function isTransaction(){
+        return !$this->auto_commit;
     }
 }

@@ -209,7 +209,7 @@ abstract class Models{
      * Genera la consulta SQL de la condicional.
      * @return string
      */
-    protected static function where($filters=[], $operador = "=", $conditional="AND", $datas){
+    protected static function where(&$filters=[], $operador = "=", $conditional="AND", $datas){
         $SQL = "";
         if (count($filters) > 0) {
             $actions = [];
@@ -218,6 +218,16 @@ abstract class Models{
                     continue;
                 }
                 $column = $datas["metas"][$key]->get_column();
+                if($value == NULL && $operador == "="){
+                    $actions[] = "{$column} IS NULL";
+                    unset($filters[$key]);
+                    continue;
+                }
+                if($value == "NULL" && $operador == "!="){
+                    $actions[] = "{$column} IS NOT NULL";
+                    unset($filters[$key]);
+                    continue;
+                }
                 $actions[] = "{$column} {$operador} :{$key}";
             }
             $SQL = "WHERE ".implode(" {$conditional} ", $actions);
