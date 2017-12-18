@@ -10,6 +10,7 @@ abstract class Models{
      */
     protected $schema;
     protected static $table_name;
+    protected static $order_column;
     /**
      * Genera el esquema de la base de datos
      * @param $schema \phpORM\Schema
@@ -18,7 +19,8 @@ abstract class Models{
         $attr = get_class_vars(static::class);
         $ignore = [
             "schema",
-            "table_name"
+            "table_name",
+            "order_column"
         ];
         $keys_columns = array_diff(array_keys($attr), $ignore);
         $columns = [];
@@ -242,6 +244,13 @@ abstract class Models{
         $SQL = static::select($columns, $datas);
         if(count($filters) > 0){
             $SQL.= " ".static::where($filters, $operador, $conditional, $datas);
+        }
+        if (static::$order_column != NULL
+            && count(array_keys(static::$order_column)) > 0
+            && !preg_match("/(COUNT\(|GROUP)/i", $SQL)) {
+            $order_field = $datas["metas"][static::$order_column["column"]]->get_column();
+            $order_method = static::$order_column["method"];
+            $SQL.= " ORDER BY {$order_field} {$order_method}";
         }
         $query = $schema->prepare($SQL, $filters);
         return $query;

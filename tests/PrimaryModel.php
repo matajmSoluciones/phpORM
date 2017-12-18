@@ -14,6 +14,10 @@ use \phpORM\Utils\Timezone;
 class PrimaryModel extends Models
 {
     protected static $table_name = "prueba2";
+    protected static $order_column = [
+        "column" => "name",
+        "method" => "ASC"
+    ];
     public $id = [
         "type" => AutoIncrementField::class,
         "size" => 80,
