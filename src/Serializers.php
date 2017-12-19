@@ -39,13 +39,14 @@ class Serializers implements \JsonSerializable{
         }
     }
     public function __set($key, $value){
+        $this->obj[$key] = $value;
         if(!isset($this->metas[$key])){
             return;
         }
-        $this->obj[$key] = $value;
-        if ($this->inserted) {
-            $this->update = true;
+        if (!$this->inserted) {
+            return;
         }
+        $this->update = true;
     }
     public function __get($key){
         if(!array_key_exists($key, $this->obj)){

@@ -116,17 +116,28 @@ class ModalPrimaryTest extends \PHPUnit\Framework\TestCase
      * Editar objeto
      */
     public function testgetIdEdit(){
+        $database = Database::getContainer();
         $obj = PrimaryModel::findId(1);
         $this->assertNotNull($obj);
         $this->assertNotNull($obj->id);
         $this->assertNotNull($obj->name);
+        $database->begin();
         $obj->name = "prueba2";
         $obj->notExist = "no debe añadirse";
+        $obj->is_exists = true;
+        $obj->save();
+        $database->commit();
+        $stm = self::$schema->prepare(
+            "SELECT * FROM prueba2 WHERE prueba2_id = ?", [1]);
+            $compare = $stm->fetch(\PDO::FETCH_OBJ);
+        $this->assertEquals($compare->pg_name, $obj->name);
+        $this->assertEquals($compare->is_exists == 1, $obj->is_exists);
+        $obj->is_exists = false;
         $obj->save();
         $stm = self::$schema->prepare(
             "SELECT * FROM prueba2 WHERE prueba2_id = ?", [1]);
-        $compare = $stm->fetch(\PDO::FETCH_OBJ);
-        $this->assertEquals($compare->pg_name, $obj->name);
+            $compare = $stm->fetch(\PDO::FETCH_OBJ);
+        $this->assertEquals($compare->is_exists == 1, $obj->is_exists);
     }
     /**
      * Eliminar objeto
