@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.0.5] - 2017-12-19
+
+### FIXED
+
+- Soporte operadores lógicos y de ordenamiento
+- Soporte transacción atomica.
+- Objetos nulos al no peternecer a la clase models solucionado.
+
 ## [0.0.4] - 2017-12-17
 
 ### FIXED
