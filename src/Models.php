@@ -207,34 +207,118 @@ abstract class Models{
         $SQL = "SELECT {$sql} FROM {$table}";
         return $SQL;
     }
-    /**
-     * Genera la consulta SQL de la condicional.
-     * @return string
-     */
-    protected static function where(&$filters=[], $operador = "=", $conditional="AND", $datas){
-        $SQL = "";
-        if (count($filters) > 0) {
-            $actions = [];
-            foreach($filters as $key => $value){
-                if(!isset($datas["metas"][$key])){
-                    continue;
-                }
-                $column = $datas["metas"][$key]->get_column();
+    private static function get_meta_where(&$filters, $metas, $operator, $conditional, &$searchs){
+        $database = Database::getContainer();
+        $actions = [];
+        $operators = [
+            "%gt" => ">",
+            "%gte" => ">=",
+            "%eq" => "=",
+            "%in" => "IN",
+            "%lt" => "<",
+            "%lte" => "<=",
+            "%ne" => "!=",
+            "%nin" => "NOT IN"
+        ];
+        foreach($filters as $key => $value){
+            $operador = "=";
+            if(!isset($metas[$key])){
+                throw new \Exception("Campo {$key} no es valido!");
+            }
+            $column = $metas[$key]->get_column();
                 if($value == NULL && $operador == "="){
                     $actions[] = "{$column} IS NULL";
-                    unset($filters[$key]);
                     continue;
                 }
                 if($value == "NULL" && $operador == "!="){
                     $actions[] = "{$column} IS NOT NULL";
-                    unset($filters[$key]);
                     continue;
                 }
-                $actions[] = "{$column} {$operador} :{$key}";
+                if(gettype($value) == "array"){
+                    $keys = array_keys($value);
+                    $n_keys = count($keys);
+                    if($n_keys > 1 && $n_keys == 0) {
+                        throw new \Exception("El campo {$key} requiere un operador clave!");
+                    }
+                    if(!isset($operators[$keys[0]])){
+                        throw new \Exception("El operador {$keys[0]} no es valido!");
+                    }
+                    if($keys[0] == "%in" || $keys[0] == "%nin") {
+                        $type_column = $metas[$key]->get_type();
+                        foreach($value[$keys[0]] as &$str){
+                            if(preg_match("/(INT|SERIAL)/i", $type_column)){
+                                $str = (int)$str;
+                                continue;
+                            }
+                            $str = $database->scape_chars($str);
+                        }
+                        $val = implode(",", $value[$keys[0]]);
+                        $actions[] = "{$column} {$operators[$keys[0]]}({$val})";
+                        continue;
+                    }
+                    $filte_val = $key;
+                    if(isset($searchs[$filte_val])) {
+                        $filte_val = $key.uniqid();
+                    }
+                    $searchs[$filte_val] = $value[$keys[0]];
+                    $actions[] = "{$column} {$operators[$keys[0]]} :{$filte_val}";
+                    continue;
+                }
+                $filte_val = $key;
+                if(isset($searchs[$filte_val])) {
+                    $filte_val = $key.uniqid();
+                }
+                $searchs[$filte_val] = $value;
+                $actions[] = "{$column} {$operador} :{$filte_val}";
+            }
+        return implode(" {$conditional} ", $actions);
+    }
+    /**
+     * Genera la consulta SQL de la condicional.
+     * @return string
+     */
+    protected static function where(&$filters=[], $datas){
+        $SQL = "";
+        $operador = "=";
+        $conditional="AND";
+        $searchs = [];
+        if (count($filters) > 0) {
+            $actions = [];
+            $conditional_operators = [
+                "%AND",
+                "%OR"
+            ];
+            foreach($filters as $key => $value){
+                if(array_search($key, $conditional_operators, true) !== false){
+                    if(gettype($value) != "array"){
+                        throw new \Exception("Invalida declaración Condicional \"{$key}\"");
+                    }
+                    $_conditional = str_replace("%", "", $key);
+                    if( array_keys( $value ) !== range( 0, count($value) - 1 )){
+                        $actions[] = "(".static::get_meta_where(
+                            $value, $datas["metas"], $operador,
+                            $_conditional, $searchs).")";
+                    }else{
+                        $group_actions = [];
+                        foreach($value as $conditionals) {
+                            $group_actions[] = static::get_meta_where(
+                                $conditionals, $datas["metas"], $operador,
+                                $_conditional, $searchs);
+                        }
+                        $actions[] = "(".implode(" {$_conditional} ", $group_actions).")";
+                    }
+                    continue;
+                }
+                $filter_key = [
+                    "{$key}" => $value
+                ];
+                $actions[] = static::get_meta_where(
+                    $filter_key, $datas["metas"], $operador,
+                    $conditional, $searchs);
             }
             $SQL = "WHERE ".implode(" {$conditional} ", $actions);
         }
-        return $SQL;
+        return [$SQL, $searchs];
     }
     /**
      * Genera la consulta SQL completa a partir de las condicionales.
@@ -242,8 +326,11 @@ abstract class Models{
      */
     protected static function SQLQueryGet($filters=[], $operador = "=", $conditional="AND", $columns=[], $datas, $schema){
         $SQL = static::select($columns, $datas);
+        $searchs = [];
         if(count($filters) > 0){
-            $SQL.= " ".static::where($filters, $operador, $conditional, $datas);
+            $data_where = static::where($filters, $datas);
+            $searchs = $data_where[1];
+            $SQL.= " ".$data_where[0];
         }
         if (static::$order_column != NULL
             && count(array_keys(static::$order_column)) > 0
@@ -252,7 +339,7 @@ abstract class Models{
             $order_method = static::$order_column["method"];
             $SQL.= " ORDER BY {$order_field} {$order_method}";
         }
-        $query = $schema->prepare($SQL, $filters);
+        $query = $schema->prepare($SQL, $searchs);
         return $query;
     }
     /**

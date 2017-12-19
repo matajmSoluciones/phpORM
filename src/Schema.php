@@ -97,4 +97,7 @@ class Schema{
     public function isTransaction(){
         return !$this->auto_commit;
     }
+    public function scape_chars($str){
+        return $this->database->quote($str);
+    }
 }
