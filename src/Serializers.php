@@ -83,15 +83,13 @@ class Serializers implements \JsonSerializable{
         $SQL = "INSERT INTO {$this->table}({$columns_SQL})
             VALUES ({$field_SQL})";
         $stm = $this->schema->prepare($SQL, $info["values"]);
-        try{
+        $meta = $this->metas[$this->pk_column[0]];
+        if($meta instanceof Fields\AutoIncrementField) {
             $id_primary = $this->schema->getIdInsert();
-            if(!empty($id_primary)){
-                $meta = $this->metas[$this->pk_column[0]];
-                $middleware = $meta->getMiddlewares();
-                $str = $middleware($id_primary);
-                $this->obj[$this->pk_column[0]] = $str;
-            }
-        }catch(\PDOException $e){}
+            $middleware = $meta->getMiddlewares();
+            $str = $middleware($id_primary);
+            $this->obj[$this->pk_column[0]] = $str;
+        }
         return $stm;
     }
     private function update(){

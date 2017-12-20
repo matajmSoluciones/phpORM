@@ -73,6 +73,41 @@ class ModalPrimaryTest extends \PHPUnit\Framework\TestCase
         $this->assertNotNull($json);
     }
     /**
+     * Creando un objeto serializers
+     * a partir del modelo con transaction
+     */
+    public function testCreateObjCommit(){
+        $database = \phpORM\Database::getContainer();
+        $database->begin();
+        $foreign = ModelExample::create([
+            "name" => "probando 2"
+        ]);
+        $foreign->save();
+        $obj = PrimaryModel::create([
+            "name" => "hola 12",
+            "foreign" => $foreign,
+            "is_admin" => true,
+            "data" => [
+                "campo" => "valor"
+            ]
+        ]);
+        $this->assertNotNull($obj);
+        $obj->save();
+        $database->commit();
+        $this->assertNotNull($obj->id);
+        $this->assertNotNull($obj->name);
+        $this->assertNotNull($obj->time);
+        $this->assertNotNull($obj->credential);
+        $this->assertNotNull($obj->foreign);
+        $this->assertInstanceOf(\phpORM\Serializers::class, $obj->foreign);
+        $this->assertTrue(\phpORM\Utils\UUID::is_valid($obj->credential));
+        $this->assertInstanceOf(\DateTime::class, $obj->time);
+        $this->assertInternalType("int", $obj->id);
+        $this->assertInternalType("array", $obj->data);
+        $json = json_encode($obj);
+        $this->assertNotNull($json);
+    }
+    /**
      * Buscando todos los registros
      */
     public function testgetAllObj(){
