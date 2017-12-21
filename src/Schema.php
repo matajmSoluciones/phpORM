@@ -16,6 +16,10 @@ class Schema{
         try{
             return $this->database->exec($value);
         }catch(\PDOException $error){
+            $database = Database::getContainer();
+            if($database->isTransaction()) {
+                $database->rollBack();
+            }
             throw new Exception\IntegrityError($error->getMessage());
         }
     }
@@ -29,6 +33,10 @@ class Schema{
             $query = $stm->execute($INPUT);
             return $stm;
         }catch(\PDOException $error){
+            $database = Database::getContainer();
+            if($database->isTransaction()) {
+                $database->rollBack();
+            }
             throw new Exception\IntegrityError($error->getMessage());
         }
     }

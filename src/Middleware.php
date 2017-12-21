@@ -26,7 +26,7 @@ class Middleware{
                 }
             }
         }
-        if(method_exists($this->meta, "obj_value")){
+        if(method_exists($this->meta, "obj_value") && !is_null($str)){
             $str = $this->meta->obj_value($str);
         }
         return $str;
@@ -37,7 +37,7 @@ class Middleware{
      * @return string
      */
     public function parseVal($str){
-        if(method_exists($this->meta, "sql_value")){
+        if(method_exists($this->meta, "sql_value") && !is_null($str)){
             $str = $this->meta->sql_value($str);
         }
         return $str;
