@@ -26,7 +26,7 @@ class ForeignKeyField extends BaseField{
         return $this->relate_model;
     }
     public function get_foreign_key(){
-        return $this->foreign_key[0];
+        return $this->foreign_key[1]->get_column();
     }
     public function __toString(){
         switch($this->column_type){
