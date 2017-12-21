@@ -13,6 +13,7 @@ class QueryTest extends \PHPUnit\Framework\TestCase
         Database::$password = '123';
         self::$schema = Database::getContainer();
         ModelExample::createTable(true);
+        ChildrenModel::createTable(true);
         PrimaryModel::createTable(true);
         $foreign = ModelExample::create([
             "name" => "probando"
@@ -32,6 +33,7 @@ class QueryTest extends \PHPUnit\Framework\TestCase
     }
     static function tearDownBeforeClass(){
         PrimaryModel::dropTable(true, true);
+        ChildrenModel::dropTable(true, true);
         ModelExample::dropTable(true, true);
     }
     public function testgetAllOperatorEq(){

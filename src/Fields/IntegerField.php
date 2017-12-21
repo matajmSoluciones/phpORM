@@ -15,6 +15,9 @@ class IntegerField extends BaseField{
         return $SQL;
     }
     public function obj_value($str){
+        if(is_null($str)) {
+            return NULL;
+        }
         return (int)$str;
     }
 }

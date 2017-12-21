@@ -17,9 +17,6 @@ class DateTimeField extends BaseField{
         return $SQL;
     }
     public function format($str) {
-        if(empty($str)) {
-            return NULL;
-        }
         return $str->format($this->format);
     }
     public function obj_value($str){
@@ -29,9 +26,6 @@ class DateTimeField extends BaseField{
         return Timezone::format($str, $this->sql_format);
     }
     public function sql_value($date){
-        if (empty($date)) {
-            return NULL;
-        }
         return $date->format($this->sql_format);
     }
 }

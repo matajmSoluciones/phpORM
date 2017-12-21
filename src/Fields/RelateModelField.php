@@ -34,9 +34,6 @@ class RelateModelField extends BaseField{
         return "";
     }
     public function obj_value($str){
-        if(empty($str)) {
-            return NULL;
-        }
         $filter = [];
         $filter[$this->column_relate_key] = (string)$str;
         if ($this->many) {

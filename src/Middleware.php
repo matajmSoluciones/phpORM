@@ -21,7 +21,7 @@ class Middleware{
         foreach($this->middlewares as $middleware){
             if (is_callable($middleware)) {
                 $value = $middleware($str);
-                if ($value != NULL || gettype($value) == "boolean") {
+                if (!is_null($value)) {
                     $str = $value;
                 }
             }

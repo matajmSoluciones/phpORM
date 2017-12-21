@@ -37,7 +37,7 @@ class BaseField{
         $this->middleware = new \phpORM\Middleware($this);
         if (isset($args["default"])) {
             $this->middleware->add(function ($str) use ($args){
-                if (!empty($str)) {
+                if (!is_null($str)) {
                     return $str;
                 }
                 if (is_callable($args["default"])) {

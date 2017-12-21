@@ -31,10 +31,6 @@ class Serializers implements \JsonSerializable{
             }
             $middleware = $column->getMiddlewares();
             $value = $middleware($input);
-            if(empty($value) && gettype($value) != "boolean"){
-                $this->obj[$key] = NULL;
-                continue;
-            }
             $this->obj[$key] = $value;
         }
     }
@@ -60,7 +56,7 @@ class Serializers implements \JsonSerializable{
         $values = [];
         foreach($this->obj as $key => $value){
             if(!isset($this->metas[$key]) || (
-                empty($value) && gettype($value) != "boolean")
+                is_null($value))
                 || !$this->metas[$key]->isInsert()){
                 continue;
             }
@@ -84,7 +80,8 @@ class Serializers implements \JsonSerializable{
             VALUES ({$field_SQL})";
         $stm = $this->schema->prepare($SQL, $info["values"]);
         $meta = $this->metas[$this->pk_column[0]];
-        if($meta instanceof Fields\AutoIncrementField) {
+        if($meta instanceof Fields\AutoIncrementField
+            && is_null($this->obj[$this->pk_column[0]])) {
             $id_primary = $this->schema->getIdInsert();
             $middleware = $meta->getMiddlewares();
             $str = $middleware($id_primary);
@@ -169,7 +166,8 @@ class Serializers implements \JsonSerializable{
                 unset($obj[$key]);
                 continue;
             }
-            if(!method_exists($this->metas[$key], "format")) {
+            if(!method_exists($this->metas[$key], "format")
+                || is_null($value)) {
                 continue;
             }
             $obj[$key] = $this->metas[$key]->format($value);
