@@ -17,15 +17,27 @@ class DateTimeField extends BaseField{
         return $SQL;
     }
     public function format($str) {
-        return $str->format($this->format);
+        if($str instanceof \DateTime) {
+            return $str->format($this->format);
+        }
+        return $str;
     }
     public function obj_value($str){
-        if(gettype($str) == "object") {
+        if($str instanceof \DateTime) {
             return $str;
+        }
+        if(empty($str)) {
+            return NULL;
         }
         return Timezone::format($str, $this->sql_format);
     }
     public function sql_value($date){
-        return $date->format($this->sql_format);
+        if($date instanceof \DateTime) {
+            return $date->format($this->sql_format);
+        }
+        if(empty($date)) {
+            return NULL;
+        }
+        return $date;
     }
 }
