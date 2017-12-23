@@ -226,11 +226,11 @@ abstract class Models{
                 throw new \Exception("Campo {$key} no es valido!");
             }
             $column = $metas[$key]->get_column();
-                if($value == NULL && $operador == "="){
+                if(is_null($value) && $operador == "="){
                     $actions[] = "{$column} IS NULL";
                     continue;
                 }
-                if($value == "NULL" && $operador == "!="){
+                if(is_null($value) && $operador == "!="){
                     $actions[] = "{$column} IS NOT NULL";
                     continue;
                 }
@@ -246,10 +246,9 @@ abstract class Models{
                     if($keys[0] == "%in" || $keys[0] == "%nin") {
                         $type_column = $metas[$key]->get_type();
                         foreach($value[$keys[0]] as &$str){
-                            if(preg_match("/(INT|SERIAL)/i", $type_column)){
-                                $str = (int)$str;
-                                continue;
-                            }
+                            $str = $metas[$key]
+                                ->getMiddlewares()
+                                ->parseVal($str);
                             $str = $database->scape_chars($str);
                         }
                         $val = implode(",", $value[$keys[0]]);
@@ -260,7 +259,9 @@ abstract class Models{
                     if(isset($searchs[$filte_val])) {
                         $filte_val = $key.uniqid();
                     }
-                    $searchs[$filte_val] = $value[$keys[0]];
+                    $searchs[$filte_val] = $metas[$key]
+                        ->getMiddlewares()
+                        ->parseVal($value[$keys[0]]);
                     $actions[] = "{$column} {$operators[$keys[0]]} :{$filte_val}";
                     continue;
                 }
@@ -268,7 +269,9 @@ abstract class Models{
                 if(isset($searchs[$filte_val])) {
                     $filte_val = $key.uniqid();
                 }
-                $searchs[$filte_val] = $value;
+                $searchs[$filte_val] = $metas[$key]
+                        ->getMiddlewares()
+                        ->parseVal($value);
                 $actions[] = "{$column} {$operador} :{$filte_val}";
             }
         return implode(" {$conditional} ", $actions);
